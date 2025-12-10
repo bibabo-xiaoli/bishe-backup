@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地址管理 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#3F7745', 'primary-light': '#79A26A' } } }
+        }
+    </script>
+    <style>.sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i><span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i><span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i><span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-map-pin text-lg"></i><span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i><span>回收订单</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i><span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i><span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i><span>售后管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i><span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1"><p class="text-sm font-medium">管理员</p><p class="text-xs text-gray-500">admin@recycle.com</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <h1 class="text-lg font-bold text-gray-800">地址管理</h1>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Stats -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-map-pin text-xl text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">28,456</p>
+                                <p class="text-xs text-gray-500">总地址数</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-house text-xl text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">18,920</p>
+                                <p class="text-xs text-gray-500">家庭地址</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-buildings text-xl text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">9,536</p>
+                                <p class="text-xs text-gray-500">公司地址</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-star text-xl text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">12,580</p>
+                                <p class="text-xs text-gray-500">默认地址</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" placeholder="搜索用户/地址/手机号" class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>全部标签</option>
+                            <option>家</option>
+                            <option>公司</option>
+                            <option>其他</option>
+                        </select>
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>全部省份</option>
+                            <option>北京市</option>
+                            <option>上海市</option>
+                            <option>广东省</option>
+                            <option>浙江省</option>
+                        </select>
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>是否默认</option>
+                            <option>默认地址</option>
+                            <option>非默认</option>
+                        </select>
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">查询</button>
+                        <button class="text-gray-500 text-sm hover:text-primary">重置</button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 text-left text-gray-600">
+                            <tr>
+                                <th class="px-4 py-3 w-10"><input type="checkbox" class="rounded"></th>
+                                <th class="px-4 py-3">地址ID</th>
+                                <th class="px-4 py-3">用户</th>
+                                <th class="px-4 py-3">联系人</th>
+                                <th class="px-4 py-3">联系电话</th>
+                                <th class="px-4 py-3">详细地址</th>
+                                <th class="px-4 py-3">标签</th>
+                                <th class="px-4 py-3">默认</th>
+                                <th class="px-4 py-3">创建时间</th>
+                                <th class="px-4 py-3">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10001</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/32?img=1" class="w-8 h-8 rounded-full">
+                                        <span class="font-medium">环保小卫士</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">张三</td>
+                                <td class="px-4 py-3">138****0001</td>
+                                <td class="px-4 py-3 max-w-[300px]">
+                                    <p class="truncate text-gray-600">北京市朝阳区阳光100国际公寓A座1202室</p>
+                                </td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">家</span></td>
+                                <td class="px-4 py-3"><i class="ph-fill ph-star text-yellow-500"></i></td>
+                                <td class="px-4 py-3 text-gray-500">2023-08-15</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-primary hover:underline mr-2">查看</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10002</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/32?img=1" class="w-8 h-8 rounded-full">
+                                        <span class="font-medium">环保小卫士</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">张三</td>
+                                <td class="px-4 py-3">138****0001</td>
+                                <td class="px-4 py-3 max-w-[300px]">
+                                    <p class="truncate text-gray-600">北京市海淀区中关村软件园二期B座5层</p>
+                                </td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs">公司</span></td>
+                                <td class="px-4 py-3"><i class="ph ph-star text-gray-300"></i></td>
+                                <td class="px-4 py-3 text-gray-500">2023-08-20</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-primary hover:underline mr-2">查看</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10003</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/32?img=2" class="w-8 h-8 rounded-full">
+                                        <span class="font-medium">绿色生活家</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">李四</td>
+                                <td class="px-4 py-3">139****0002</td>
+                                <td class="px-4 py-3 max-w-[300px]">
+                                    <p class="truncate text-gray-600">上海市浦东新区陆家嘴金融中心8号楼2501</p>
+                                </td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">家</span></td>
+                                <td class="px-4 py-3"><i class="ph-fill ph-star text-yellow-500"></i></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-02</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-primary hover:underline mr-2">查看</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10004</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/32?img=3" class="w-8 h-8 rounded-full">
+                                        <span class="font-medium">分类小能手</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">王五</td>
+                                <td class="px-4 py-3">137****0003</td>
+                                <td class="px-4 py-3 max-w-[300px]">
+                                    <p class="truncate text-gray-600">广东省深圳市南山区科技园南区T2栋1801</p>
+                                </td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs">公司</span></td>
+                                <td class="px-4 py-3"><i class="ph-fill ph-star text-yellow-500"></i></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-10</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-primary hover:underline mr-2">查看</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10005</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://i.pravatar.cc/32?img=4" class="w-8 h-8 rounded-full">
+                                        <span class="font-medium">低碳生活</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">赵六</td>
+                                <td class="px-4 py-3">136****0004</td>
+                                <td class="px-4 py-3 max-w-[300px]">
+                                    <p class="truncate text-gray-600">浙江省杭州市西湖区文三路478号华星时代广场</p>
+                                </td>
+                                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">其他</span></td>
+                                <td class="px-4 py-3"><i class="ph-fill ph-star text-yellow-500"></i></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-15</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-primary hover:underline mr-2">查看</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Pagination -->
+                    <div class="px-4 py-3 border-t flex items-center justify-between">
+                        <span class="text-sm text-gray-500">共 28,456 条记录</span>
+                        <div class="flex gap-1">
+                            <button class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
+                            <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
+                            <button class="px-3 py-1 border rounded text-sm">2</button>
+                            <button class="px-3 py-1 border rounded text-sm">3</button>
+                            <span class="px-2 py-1 text-gray-400">...</span>
+                            <button class="px-3 py-1 border rounded text-sm">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

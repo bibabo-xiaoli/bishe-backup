@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后管理 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#3F7745', 'primary-light': '#79A26A' } } }
+        }
+    </script>
+    <style>.sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i><span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i><span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i><span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i><span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i><span>回收订单</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i><span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i><span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-headset text-lg"></i><span>售后管理</span>
+                        <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">8</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i><span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1"><p class="text-sm font-medium">管理员</p><p class="text-xs text-gray-500">admin@recycle.com</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <h1 class="text-lg font-bold text-gray-800">售后管理</h1>
+            </header>
+
+            <main class="flex-1 overflow-y-auto">
+                <!-- Stats -->
+                <div class="p-6 pb-0">
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-red-500">
+                            <p class="text-2xl font-bold text-red-600">8</p>
+                            <p class="text-xs text-gray-500">待处理</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-500">
+                            <p class="text-2xl font-bold text-orange-600">12</p>
+                            <p class="text-xs text-gray-500">处理中</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-green-500">
+                            <p class="text-2xl font-bold text-green-600">256</p>
+                            <p class="text-xs text-gray-500">已解决</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-gray-400">
+                            <p class="text-2xl font-bold text-gray-600">98.5%</p>
+                            <p class="text-xs text-gray-500">解决率</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="bg-white px-6 border-b flex gap-6">
+                    <button class="py-3 border-b-2 border-primary text-primary font-medium text-sm">全部工单 (276)</button>
+                    <button class="py-3 text-gray-500 text-sm hover:text-gray-700">待处理 <span class="bg-red-100 text-red-600 px-1.5 rounded text-xs">8</span></button>
+                    <button class="py-3 text-gray-500 text-sm hover:text-gray-700">处理中 <span class="bg-orange-100 text-orange-600 px-1.5 rounded text-xs">12</span></button>
+                    <button class="py-3 text-gray-500 text-sm hover:text-gray-700">已解决</button>
+                    <button class="py-3 text-gray-500 text-sm hover:text-gray-700">已关闭</button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white px-6 py-4 border-b">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="工单号/订单号/用户名" class="border rounded-lg px-3 py-2 text-sm w-56">
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>问题类型</option>
+                            <option>积分问题</option>
+                            <option>订单问题</option>
+                            <option>回收员问题</option>
+                            <option>其他问题</option>
+                        </select>
+                        <div class="flex items-center gap-2">
+                            <input type="date" class="border rounded-lg px-3 py-2 text-sm">
+                            <span class="text-gray-400">至</span>
+                            <input type="date" class="border rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm">查询</button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="p-6">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-left text-gray-600">
+                                <tr>
+                                    <th class="px-4 py-3">工单号</th>
+                                    <th class="px-4 py-3">关联订单</th>
+                                    <th class="px-4 py-3">用户</th>
+                                    <th class="px-4 py-3">问题类型</th>
+                                    <th class="px-4 py-3">问题描述</th>
+                                    <th class="px-4 py-3">状态</th>
+                                    <th class="px-4 py-3">提交时间</th>
+                                    <th class="px-4 py-3">处理人</th>
+                                    <th class="px-4 py-3">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr class="hover:bg-gray-50 bg-red-50/30">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231025001</td>
+                                    <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231024015</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://i.pravatar.cc/24?img=1" class="w-6 h-6 rounded-full">
+                                            <span>张三</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-xs">积分问题</span></td>
+                                    <td class="px-4 py-3 max-w-[200px]">
+                                        <p class="truncate text-gray-600">回收了8.5kg纸板箱，但只获得了50积分，应该是127积分</p>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-medium">待处理</span></td>
+                                    <td class="px-4 py-3 text-gray-500">2023-10-25 09:30</td>
+                                    <td class="px-4 py-3 text-gray-400">-</td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-primary hover:underline mr-2">处理</button>
+                                        <button class="text-gray-400 hover:text-gray-600">详情</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 bg-red-50/30">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231025002</td>
+                                    <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231024008</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://i.pravatar.cc/24?img=2" class="w-6 h-6 rounded-full">
+                                            <span>李四</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs">回收员问题</span></td>
+                                    <td class="px-4 py-3 max-w-[200px]">
+                                        <p class="truncate text-gray-600">回收员态度不好，称重时不让我看秤</p>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-medium">待处理</span></td>
+                                    <td class="px-4 py-3 text-gray-500">2023-10-25 10:15</td>
+                                    <td class="px-4 py-3 text-gray-400">-</td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-primary hover:underline mr-2">处理</button>
+                                        <button class="text-gray-400 hover:text-gray-600">详情</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 bg-orange-50/30">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231024003</td>
+                                    <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231023022</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://i.pravatar.cc/24?img=3" class="w-6 h-6 rounded-full">
+                                            <span>王五</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs">订单问题</span></td>
+                                    <td class="px-4 py-3 max-w-[200px]">
+                                        <p class="truncate text-gray-600">预约了上门回收，但回收员没有按时到达</p>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-xs font-medium">处理中</span></td>
+                                    <td class="px-4 py-3 text-gray-500">2023-10-24 14:20</td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-gray-600">客服小张</span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-primary hover:underline mr-2">跟进</button>
+                                        <button class="text-gray-400 hover:text-gray-600">详情</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231023004</td>
+                                    <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231022018</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://i.pravatar.cc/24?img=4" class="w-6 h-6 rounded-full">
+                                            <span>赵六</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-xs">积分问题</span></td>
+                                    <td class="px-4 py-3 max-w-[200px]">
+                                        <p class="truncate text-gray-600">积分兑换商品后一直没有发货</p>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-medium">已解决</span></td>
+                                    <td class="px-4 py-3 text-gray-500">2023-10-23 11:00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-gray-600">客服小李</span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-gray-400 hover:text-gray-600">详情</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231022005</td>
+                                    <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231021025</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://i.pravatar.cc/24?img=5" class="w-6 h-6 rounded-full">
+                                            <span>钱七</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">其他问题</span></td>
+                                    <td class="px-4 py-3 max-w-[200px]">
+                                        <p class="truncate text-gray-600">APP闪退，无法正常使用</p>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-medium">已解决</span></td>
+                                    <td class="px-4 py-3 text-gray-500">2023-10-22 16:45</td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-gray-600">技术小王</span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-gray-400 hover:text-gray-600">详情</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="px-4 py-3 border-t flex items-center justify-between">
+                            <span class="text-sm text-gray-500">共 276 条记录</span>
+                            <div class="flex gap-1">
+                                <button class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
+                                <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
+                                <button class="px-3 py-1 border rounded text-sm">2</button>
+                                <button class="px-3 py-1 border rounded text-sm">3</button>
+                                <button class="px-3 py-1 border rounded text-sm">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Process Modal -->
+    <div id="processModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl w-[500px] max-h-[80vh] overflow-hidden">
+            <div class="p-6 border-b flex items-center justify-between">
+                <h3 class="text-lg font-bold">处理售后工单</h3>
+                <button onclick="document.getElementById('processModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2"><strong>工单号:</strong> AS20231025001</p>
+                    <p class="text-sm text-gray-600 mb-2"><strong>问题类型:</strong> 积分问题</p>
+                    <p class="text-sm text-gray-600"><strong>问题描述:</strong> 回收了8.5kg纸板箱，但只获得了50积分，应该是127积分</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">处理结果</label>
+                        <select class="w-full border rounded-lg px-3 py-2 text-sm">
+                            <option>补发积分</option>
+                            <option>退款处理</option>
+                            <option>重新上门</option>
+                            <option>无效工单</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">补发积分数量</label>
+                        <input type="number" value="77" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">回复内容</label>
+                        <textarea rows="3" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="输入回复给用户的内容...">尊敬的用户您好，经核实您的回收订单确实存在积分计算错误，我们已为您补发77积分，请查收。给您带来的不便深表歉意！</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex justify-end gap-3">
+                <button class="px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-white">取消</button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm">确认处理</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar text-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav-white" src="/image/caret-left.png" wx:if="{{canGoBack}}"></image>
+    <view class="nav-title-white ml-2">环保排行榜</view>
+  </view>
+  <view class="capsule-white">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider-white"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<view class="container bg-green-50">
+  <!-- Top Header Area -->
+  <view class="header-bg">
+    <!-- Tabs -->
+    <view class="tabs-container" style="margin-top: {{statusBarHeight + navBarHeight}}px;">
+      <view class="tabs-bg">
+        <view class="tab-item {{currentTab === 'week' ? 'active' : ''}}" bindtap="switchTab" data-tab="week">周榜</view>
+        <view class="tab-item {{currentTab === 'month' ? 'active' : ''}}" bindtap="switchTab" data-tab="month">月榜</view>
+        <view class="tab-item {{currentTab === 'total' ? 'active' : ''}}" bindtap="switchTab" data-tab="total">总榜</view>
+      </view>
+    </view>
+
+    <!-- Podium -->
+    <view class="podium-container">
+      <!-- 2nd Place -->
+      <view class="podium-item second">
+        <view class="avatar-wrapper">
+          <image class="avatar-img" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+          <view class="rank-badge bg-gray">2</view>
+        </view>
+        <text class="user-name">李四</text>
+        <text class="score">2180分</text>
+      </view>
+      
+      <!-- 1st Place -->
+      <view class="podium-item first">
+        <view class="crown-wrapper">
+          <image class="crown-icon" src="/image/crown.png"></image>
+        </view>
+        <view class="avatar-wrapper lg">
+          <image class="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+          <view class="rank-badge bg-yellow">1</view>
+        </view>
+        <text class="user-name bold">环保小卫士</text>
+        <text class="score highlight">2850分</text>
+      </view>
+
+      <!-- 3rd Place -->
+      <view class="podium-item third">
+        <view class="avatar-wrapper">
+          <image class="avatar-img" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+          <view class="rank-badge bg-orange">3</view>
+        </view>
+        <text class="user-name">王五</text>
+        <text class="score">1950分</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Ranking List -->
+  <scroll-view scroll-y class="ranking-list">
+    <view class="list-container">
+      <block wx:for="{{rankList}}" wx:key="rank">
+        <view class="rank-item">
+          <text class="rank-num">{{item.rank}}</text>
+          <image class="rank-avatar" src="{{item.avatar}}"></image>
+          <view class="rank-info">
+            <text class="rank-name">{{item.name}}</text>
+            <text class="rank-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+          </view>
+          <text class="rank-score">{{item.score}}</text>
+        </view>
+      </block>
+    </view>
+    <view style="height: 100px;"></view>
+  </scroll-view>
+
+  <!-- My Rank Fixed Bottom -->
+  <view class="my-rank-bar">
+    <view class="rank-item my-rank">
+      <text class="rank-num">15</text>
+      <image class="rank-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+      <view class="rank-info">
+        <text class="rank-name">我</text>
+        <text class="rank-desc">距离上一名还差 50 分</text>
+      </view>
+      <text class="rank-score">1,280</text>
+    </view>
+  </view>
+</view>

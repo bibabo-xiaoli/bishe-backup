@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等级管理 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#3F7745', 'primary-light': '#79A26A' } } }
+        }
+    </script>
+    <style>.sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i><span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i><span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-medal text-lg"></i><span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i><span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i><span>回收订单</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i><span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i><span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i><span>售后管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i><span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1"><p class="text-sm font-medium">管理员</p><p class="text-xs text-gray-500">admin@recycle.com</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <h1 class="text-lg font-bold text-gray-800">等级管理</h1>
+                <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                    <i class="ph ph-plus"></i> 添加等级
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Level Cards -->
+                <div class="grid grid-cols-5 gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-gray-400"><i class="ph ph-pencil cursor-pointer hover:text-gray-600"></i></div>
+                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <i class="ph ph-plant text-3xl text-gray-500"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-700 mb-1">Lv.1 环保新手</h3>
+                        <p class="text-xs text-gray-500 mb-2">0 - 500 积分</p>
+                        <p class="text-sm font-medium text-gray-600">3,256 人</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-green-400"><i class="ph ph-pencil cursor-pointer hover:text-green-600"></i></div>
+                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <i class="ph ph-leaf text-3xl text-green-500"></i>
+                        </div>
+                        <h3 class="font-bold text-green-700 mb-1">Lv.2 环保入门</h3>
+                        <p class="text-xs text-green-600 mb-2">501 - 1500 积分</p>
+                        <p class="text-sm font-medium text-green-700">4,128 人</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-blue-400"><i class="ph ph-pencil cursor-pointer hover:text-blue-600"></i></div>
+                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <i class="ph ph-tree text-3xl text-blue-500"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-700 mb-1">Lv.3 绿色达人</h3>
+                        <p class="text-xs text-blue-600 mb-2">1501 - 3000 积分</p>
+                        <p class="text-sm font-medium text-blue-700">2,856 人</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-purple-400"><i class="ph ph-pencil cursor-pointer hover:text-purple-600"></i></div>
+                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <i class="ph ph-medal text-3xl text-purple-500"></i>
+                        </div>
+                        <h3 class="font-bold text-purple-700 mb-1">Lv.4 减碳先锋</h3>
+                        <p class="text-xs text-purple-600 mb-2">3001 - 5000 积分</p>
+                        <p class="text-sm font-medium text-purple-700">1,542 人</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-yellow-500"><i class="ph ph-pencil cursor-pointer hover:text-yellow-700"></i></div>
+                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <i class="ph ph-crown text-3xl text-yellow-500"></i>
+                        </div>
+                        <h3 class="font-bold text-yellow-700 mb-1">Lv.5 环保大师</h3>
+                        <p class="text-xs text-yellow-600 mb-2">5001+ 积分</p>
+                        <p class="text-sm font-medium text-yellow-700">798 人</p>
+                    </div>
+                </div>
+
+                <!-- Level Settings Table -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b">
+                        <h3 class="font-bold text-gray-800">等级配置详情</h3>
+                    </div>
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 text-left text-gray-600">
+                            <tr>
+                                <th class="px-4 py-3">等级</th>
+                                <th class="px-4 py-3">等级名称</th>
+                                <th class="px-4 py-3">积分区间</th>
+                                <th class="px-4 py-3">徽章图标</th>
+                                <th class="px-4 py-3">等级权益</th>
+                                <th class="px-4 py-3">用户数</th>
+                                <th class="px-4 py-3">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-4"><span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">Lv.1</span></td>
+                                <td class="px-4 py-4 font-medium">环保新手</td>
+                                <td class="px-4 py-4">0 - 500</td>
+                                <td class="px-4 py-4"><i class="ph ph-plant text-2xl text-gray-500"></i></td>
+                                <td class="px-4 py-4 text-gray-500 text-xs">基础功能使用</td>
+                                <td class="px-4 py-4">3,256</td>
+                                <td class="px-4 py-4">
+                                    <button class="text-primary hover:underline mr-2">编辑</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-4"><span class="bg-green-200 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Lv.2</span></td>
+                                <td class="px-4 py-4 font-medium">环保入门</td>
+                                <td class="px-4 py-4">501 - 1,500</td>
+                                <td class="px-4 py-4"><i class="ph ph-leaf text-2xl text-green-500"></i></td>
+                                <td class="px-4 py-4 text-gray-500 text-xs">积分兑换9.5折</td>
+                                <td class="px-4 py-4">4,128</td>
+                                <td class="px-4 py-4">
+                                    <button class="text-primary hover:underline mr-2">编辑</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-4"><span class="bg-blue-200 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Lv.3</span></td>
+                                <td class="px-4 py-4 font-medium">绿色达人</td>
+                                <td class="px-4 py-4">1,501 - 3,000</td>
+                                <td class="px-4 py-4"><i class="ph ph-tree text-2xl text-blue-500"></i></td>
+                                <td class="px-4 py-4 text-gray-500 text-xs">积分兑换9折 + 优先预约</td>
+                                <td class="px-4 py-4">2,856</td>
+                                <td class="px-4 py-4">
+                                    <button class="text-primary hover:underline mr-2">编辑</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-4"><span class="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">Lv.4</span></td>
+                                <td class="px-4 py-4 font-medium">减碳先锋</td>
+                                <td class="px-4 py-4">3,001 - 5,000</td>
+                                <td class="px-4 py-4"><i class="ph ph-medal text-2xl text-purple-500"></i></td>
+                                <td class="px-4 py-4 text-gray-500 text-xs">积分兑换8.5折 + 专属客服</td>
+                                <td class="px-4 py-4">1,542</td>
+                                <td class="px-4 py-4">
+                                    <button class="text-primary hover:underline mr-2">编辑</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-4"><span class="bg-yellow-200 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Lv.5</span></td>
+                                <td class="px-4 py-4 font-medium">环保大师</td>
+                                <td class="px-4 py-4">5,001+</td>
+                                <td class="px-4 py-4"><i class="ph ph-crown text-2xl text-yellow-500"></i></td>
+                                <td class="px-4 py-4 text-gray-500 text-xs">积分兑换8折 + VIP专属活动 + 生日礼包</td>
+                                <td class="px-4 py-4">798</td>
+                                <td class="px-4 py-4">
+                                    <button class="text-primary hover:underline mr-2">编辑</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">附近网点</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<view class="container bg-white" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- Map Area -->
+  <view class="map-area">
+    <image class="map-img" src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" mode="aspectFill"></image>
+    <!-- My Location -->
+    <view class="my-location">
+      <image class="icon-house-white" src="/image/house.png"></image>
+    </view>
+    <!-- Pins -->
+    <view class="map-pin" style="top: 30%; left: 40%;">
+      <view class="pin-circle">
+        <image class="icon-recycle-white" src="/image/recycle.png"></image>
+      </view>
+      <view class="pin-triangle"></view>
+    </view>
+  </view>
+
+  <!-- List Area -->
+  <view class="list-area">
+    <view class="drag-handle-bar">
+      <view class="drag-handle"></view>
+    </view>
+    <view class="list-header">
+      <text class="list-title">附近回收点 (3)</text>
+    </view>
+    
+    <scroll-view scroll-y class="station-list">
+      <!-- Station 1 -->
+      <view class="station-card">
+        <view class="station-icon-box bg-orange">
+          <image class="station-icon icon-orange" src="/image/recycle.png"></image>
+        </view>
+        <view class="station-info">
+          <text class="station-name">阳光小区智能回收柜</text>
+          <text class="station-addr">北京市朝阳区阳光100国际公寓北门</text>
+          <view class="station-tags">
+            <text class="tag bg-green-light text-green">运行中</text>
+            <text class="distance">距离 150m</text>
+          </view>
+        </view>
+        <view class="nav-btn">
+          <view class="nav-icon-circle">
+            <image class="icon-arrow-nav" src="/image/navigation-arrow.png"></image>
+          </view>
+          <text class="nav-text">导航</text>
+        </view>
+      </view>
+
+      <!-- Station 2 -->
+      <view class="station-card">
+        <view class="station-icon-box bg-green">
+          <image class="station-icon icon-green" src="/image/storefront.png"></image>
+        </view>
+        <view class="station-info">
+          <text class="station-name">绿色生活服务站</text>
+          <text class="station-addr">北京市朝阳区光华路SOHO 1层</text>
+          <view class="station-tags">
+            <text class="tag bg-gray-light text-gray">营业中</text>
+            <text class="distance">距离 480m</text>
+          </view>
+        </view>
+        <view class="nav-btn">
+          <view class="nav-icon-circle">
+            <image class="icon-arrow-nav" src="/image/navigation-arrow.png"></image>
+          </view>
+          <text class="nav-text">导航</text>
+        </view>
+      </view>
+      
+      <view style="height: 40px;"></view>
+    </scroll-view>
+  </view>
+</view>

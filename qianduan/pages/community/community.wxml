@@ -1,0 +1,127 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png" wx:if="{{canGoBack}}"></image>
+    <view class="nav-title ml-2">绿色社区</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- Search & Filter -->
+  <view class="search-area">
+    <view class="search-box">
+      <image class="icon-search" src="/image/magnifying-glass.png"></image>
+      <input type="text" placeholder="搜索话题" class="search-input" />
+    </view>
+    <view class="follow-btn">我的关注</view>
+  </view>
+
+  <!-- Categories/Topics -->
+  <scroll-view scroll-x class="topics-scroll" enable-flex>
+    <view class="topics-container">
+      <view class="topic-tag active"># 全部推荐</view>
+      <view class="topic-tag"># 变废为宝</view>
+      <view class="topic-tag"># 垃圾分类疑惑</view>
+      <view class="topic-tag"># 环保活动</view>
+    </view>
+  </scroll-view>
+
+  <!-- Feed Stream -->
+  <view class="feed-list">
+    <!-- Post 1: Image Card -->
+    <view class="post-card">
+      <view class="post-header">
+        <view class="user-info">
+          <image class="avatar-sm" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+          <view class="user-meta">
+            <text class="user-name">环保达人_小美</text>
+            <text class="post-time">2小时前</text>
+          </view>
+        </view>
+        <view class="follow-outline-btn">+ 关注</view>
+      </view>
+      <text class="post-content">今天把家里的旧快递箱改造成了猫抓板，主子很喜欢！📦➡️🐈 #变废为宝 #DIY</text>
+      <view class="post-images">
+        <image class="post-img" mode="aspectFill" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"></image>
+        <image class="post-img" mode="aspectFill" src="https://images.unsplash.com/photo-1534560706691-1b9a1a47738c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"></image>
+      </view>
+      <view class="post-footer">
+        <view class="action-item hover-red">
+          <image class="icon-action" src="/image/heart.png"></image>
+          <text>128</text>
+        </view>
+        <view class="action-item hover-blue">
+          <image class="icon-action" src="/image/chat-circle.png"></image>
+          <text>45</text>
+        </view>
+        <view class="action-item hover-green">
+          <image class="icon-action" src="/image/share-network.png"></image>
+          <text>分享</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Post 2: Text Card -->
+    <view class="post-card">
+      <view class="post-header">
+        <view class="user-info">
+          <image class="avatar-sm" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+          <view class="user-meta">
+            <text class="user-name">新手上路</text>
+            <text class="post-time">5小时前</text>
+          </view>
+        </view>
+      </view>
+      <text class="post-title">求助：这种外卖餐盒属于什么垃圾？</text>
+      <text class="post-content line-clamp-2">吃完的自热火锅盒子，里面有发热包，还有塑料盒，应该怎么分类投放呢？在线等，挺急的！🤔</text>
+      <view class="comment-preview">
+        <text class="comment-user">@绿色回收助手：</text>
+        <text class="comment-text">发热包属于有害垃圾，塑料盒清洗后属于可回收物...</text>
+      </view>
+      <view class="post-footer">
+        <view class="action-item hover-red">
+          <image class="icon-action" src="/image/heart.png"></image>
+          <text>12</text>
+        </view>
+        <view class="action-item hover-blue">
+          <image class="icon-action" src="/image/chat-circle.png"></image>
+          <text>8</text>
+        </view>
+        <view class="action-item hover-green">
+          <image class="icon-action" src="/image/share-network.png"></image>
+          <text>分享</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Post 3: Activity -->
+    <view class="post-card activity-border">
+      <view class="activity-header">
+        <view class="activity-tag">官方活动</view>
+        <text class="activity-title">周末社区清洁日招募</text>
+      </view>
+      <view class="activity-banner">
+        <image class="banner-img" mode="aspectFill" src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"></image>
+        <view class="banner-overlay">
+          <button class="join-btn">立即报名</button>
+        </view>
+      </view>
+      <view class="activity-info">
+        <text>📅 本周六 09:00</text>
+        <text>📍 阳光小区中心广场</text>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 100px;"></view>
+</scroll-view>
+
+<!-- Floating Action Button -->
+<view class="fab-btn">
+  <image class="icon-fab" src="/image/pencil.png"></image>
+</view>

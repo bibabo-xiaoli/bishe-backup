@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户列表 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3F7745',
+                        'primary-light': '#79A26A',
+                        'primary-dark': '#39561F',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i>
+                        <span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-users text-lg"></i>
+                        <span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i>
+                        <span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i>
+                        <span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i>
+                        <span>回收订单</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i>
+                        <span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i>
+                        <span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i>
+                        <span>售后管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i>
+                        <span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">管理员</p>
+                        <p class="text-xs text-gray-500">admin@recycle.com</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-white"><i class="ph ph-sign-out text-lg"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-lg font-bold text-gray-800">用户列表</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="relative text-gray-500 hover:text-gray-700">
+                        <i class="ph ph-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">5</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Stats -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-users text-xl text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p id="user-total" class="text-2xl font-bold text-gray-800">12,580</p>
+                                <p class="text-xs text-gray-500">总用户数</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-user-plus text-xl text-green-600"></i>
+                            </div>
+                            <div>
+                                <p id="user-today-new" class="text-2xl font-bold text-gray-800">156</p>
+                                <p class="text-xs text-gray-500">今日新增</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-user-check text-xl text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p id="user-active-count" class="text-2xl font-bold text-gray-800">8,420</p>
+                                <p class="text-xs text-gray-500">活跃用户</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="ph ph-prohibit text-xl text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p id="user-disabled-count" class="text-2xl font-bold text-gray-800">23</p>
+                                <p class="text-xs text-gray-500">已禁用</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="user-search-input" type="text" placeholder="搜索用户昵称/手机号/ID" class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <select id="user-level-select" class="border rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>全部等级</option>
+                            <option>Lv.1 环保新手</option>
+                            <option>Lv.2 环保入门</option>
+                            <option>Lv.3 绿色达人</option>
+                            <option>Lv.4 减碳先锋</option>
+                            <option>Lv.5 环保大师</option>
+                        </select>
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>用户状态</option>
+                            <option>正常</option>
+                            <option>已禁用</option>
+                        </select>
+                        <select class="border rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>注册时间</option>
+                            <option>最近7天</option>
+                            <option>最近30天</option>
+                            <option>最近90天</option>
+                        </select>
+                        <button id="user-search-button" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">查询</button>
+                        <button id="user-reset-button" class="text-gray-500 text-sm hover:text-primary">重置</button>
+                        <button class="ml-auto bg-white border border-primary text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-primary hover:text-white transition">
+                            <i class="ph ph-export"></i> 导出数据
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 text-left text-sm text-gray-600">
+                            <tr>
+                                <th class="px-4 py-3 w-10"><input type="checkbox" class="rounded"></th>
+                                <th class="px-4 py-3">用户ID</th>
+                                <th class="px-4 py-3">用户信息</th>
+                                <th class="px-4 py-3">手机号</th>
+                                <th class="px-4 py-3">等级</th>
+                                <th class="px-4 py-3">当前积分</th>
+                                <th class="px-4 py-3">累计减碳</th>
+                                <th class="px-4 py-3">回收次数</th>
+                                <th class="px-4 py-3">状态</th>
+                                <th class="px-4 py-3">注册时间</th>
+                                <th class="px-4 py-3">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body" class="divide-y text-sm">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">U10001</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://i.pravatar.cc/40?img=1" class="w-10 h-10 rounded-full">
+                                        <span class="font-medium text-gray-800">环保小卫士</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600">138****0001</td>
+                                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">Lv.5 环保大师</span></td>
+                                <td class="px-4 py-3 font-medium text-primary">2,850</td>
+                                <td class="px-4 py-3">45.2 kg</td>
+                                <td class="px-4 py-3">28</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
+                                <td class="px-4 py-3 text-gray-500">2023-08-15 10:30</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-primary hover:underline">详情</button>
+                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
+                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">U10002</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://i.pravatar.cc/40?img=2" class="w-10 h-10 rounded-full">
+                                        <span class="font-medium text-gray-800">绿色生活家</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600">139****0002</td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">Lv.4 减碳先锋</span></td>
+                                <td class="px-4 py-3 font-medium text-primary">2,180</td>
+                                <td class="px-4 py-3">38.5 kg</td>
+                                <td class="px-4 py-3">22</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-02 14:20</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-primary hover:underline">详情</button>
+                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
+                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">U10003</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://i.pravatar.cc/40?img=3" class="w-10 h-10 rounded-full">
+                                        <span class="font-medium text-gray-800">分类小能手</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600">137****0003</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">Lv.3 绿色达人</span></td>
+                                <td class="px-4 py-3 font-medium text-primary">1,950</td>
+                                <td class="px-4 py-3">28.0 kg</td>
+                                <td class="px-4 py-3">18</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-10 09:15</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-primary hover:underline">详情</button>
+                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
+                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">U10004</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://i.pravatar.cc/40?img=4" class="w-10 h-10 rounded-full">
+                                        <span class="font-medium text-gray-800">低碳生活</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600">136****0004</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">Lv.3 绿色达人</span></td>
+                                <td class="px-4 py-3 font-medium text-primary">1,800</td>
+                                <td class="px-4 py-3">25.5 kg</td>
+                                <td class="px-4 py-3">15</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
+                                <td class="px-4 py-3 text-gray-500">2023-09-15 16:40</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-primary hover:underline">详情</button>
+                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
+                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 bg-red-50/50">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">U10005</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://i.pravatar.cc/40?img=5" class="w-10 h-10 rounded-full opacity-50">
+                                        <span class="font-medium text-gray-400">违规用户001</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-400">135****0005</td>
+                                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded text-xs font-medium">Lv.1 环保新手</span></td>
+                                <td class="px-4 py-3 font-medium text-gray-400">50</td>
+                                <td class="px-4 py-3 text-gray-400">0.5 kg</td>
+                                <td class="px-4 py-3 text-gray-400">1</td>
+                                <td class="px-4 py-3"><span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs">已禁用</span></td>
+                                <td class="px-4 py-3 text-gray-400">2023-10-01 11:20</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-primary hover:underline">详情</button>
+                                        <button class="text-green-500 hover:underline">启用</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Pagination -->
+                    <div class="px-4 py-3 border-t flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <span id="user-total-count">共 12,580 条记录</span>
+                            <span>|</span>
+                            <span>每页显示</span>
+                            <select class="border rounded px-2 py-1 text-sm">
+                                <option>10</option>
+                                <option>20</option>
+                                <option>50</option>
+                            </select>
+                            <span>条</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <button class="px-3 py-1 border rounded text-sm text-gray-400 cursor-not-allowed">上一页</button>
+                            <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">4</button>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">5</button>
+                            <span class="px-2 py-1 text-gray-400">...</span>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">1258</button>
+                            <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="userModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl w-[600px] max-h-[80vh] overflow-hidden">
+            <div class="p-6 border-b flex items-center justify-between">
+                <h3 class="text-lg font-bold">用户详情</h3>
+                <button onclick="document.getElementById('userModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-6">
+                    <img src="https://i.pravatar.cc/80?img=1" class="w-20 h-20 rounded-full">
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800">环保小卫士</h4>
+                        <p class="text-gray-500">ID: U10001 | 138****0001</p>
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">Lv.5 环保大师</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <p class="text-2xl font-bold text-primary">2,850</p>
+                        <p class="text-xs text-gray-500">当前积分</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <p class="text-2xl font-bold text-green-600">45.2 kg</p>
+                        <p class="text-xs text-gray-500">累计减碳</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <p class="text-2xl font-bold text-blue-600">28</p>
+                        <p class="text-xs text-gray-500">回收次数</p>
+                    </div>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between py-2 border-b">
+                        <span class="text-gray-500">累计积分</span>
+                        <span class="text-gray-800">5,680</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b">
+                        <span class="text-gray-500">注册时间</span>
+                        <span class="text-gray-800">2023-08-15 10:30:25</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b">
+                        <span class="text-gray-500">最后登录</span>
+                        <span class="text-gray-800">2023-10-24 09:15:00</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b">
+                        <span class="text-gray-500">默认地址</span>
+                        <span class="text-gray-800">北京市朝阳区阳光100国际公寓A座1202</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex justify-end gap-3">
+                <button class="px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-white">查看订单</button>
+                <button class="px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-white">积分记录</button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm">编辑用户</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000';
+
+        async function loadUserStats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/dashboard/summary`);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const totalEl = document.getElementById('user-total');
+                const todayNewEl = document.getElementById('user-today-new');
+                const activeEl = document.getElementById('user-active-count');
+                const disabledEl = document.getElementById('user-disabled-count');
+
+                if (totalEl && typeof data.total_users !== 'undefined') {
+                    totalEl.textContent = data.total_users;
+                }
+                if (todayNewEl && typeof data.today_new_users !== 'undefined') {
+                    todayNewEl.textContent = data.today_new_users;
+                }
+                if (activeEl && typeof data.active_users !== 'undefined') {
+                    activeEl.textContent = data.active_users;
+                }
+                if (disabledEl && typeof data.disabled_users !== 'undefined') {
+                    disabledEl.textContent = data.disabled_users;
+                }
+            } catch (e) {
+                console.error('加载用户统计失败', e);
+            }
+        }
+
+        async function loadUsers(page = 1, perPage = 10) {
+            const searchInput = document.getElementById('user-search-input');
+            const levelSelect = document.getElementById('user-level-select');
+            const tbody = document.getElementById('user-table-body');
+            const totalText = document.getElementById('user-total-count');
+
+            if (!tbody) return;
+
+            const params = new URLSearchParams();
+            params.set('page', String(page));
+            params.set('per_page', String(perPage));
+
+            if (searchInput && searchInput.value.trim()) {
+                params.set('search', searchInput.value.trim());
+            }
+            if (levelSelect && levelSelect.value && levelSelect.selectedIndex > 0) {
+                // 预留：如果将来在下拉中配置真实 level_id，可在此传递
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/users?${params.toString()}`);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                tbody.innerHTML = '';
+                (data.items || []).forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    tr.innerHTML = `
+                        <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                        <td class="px-4 py-3 text-gray-500 font-mono text-xs">${user.user_code || 'U' + String(user.id).padStart(5, '0')}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="${user.avatar_url || 'https://i.pravatar.cc/40'}" class="w-10 h-10 rounded-full">
+                                <span class="font-medium text-gray-800">${user.nickname || '未命名用户'}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-gray-600">${user.phone || '-'}</td>
+                        <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">${user.level_name || '未分级'}</span></td>
+                        <td class="px-4 py-3 font-medium text-primary">${user.current_points ?? 0}</td>
+                        <td class="px-4 py-3">${(user.total_carbon_kg ?? 0)} kg</td>
+                        <td class="px-4 py-3">${user.recycle_count ?? 0}</td>
+                        <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">${user.status || '正常'}</span></td>
+                        <td class="px-4 py-3 text-gray-500">${user.created_at || '-'}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <button class="text-primary hover:underline">[0m详情</button>
+                                <button class="text-gray-400 hover:text-orange-500">[0m编辑</button>
+                                <button class="text-gray-400 hover:text-red-500">[0m禁用</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                if (totalText && typeof data.total !== 'undefined') {
+                    totalText.textContent = `共 ${data.total} 条记录`;
+                }
+            } catch (e) {
+                console.error('加载用户列表失败', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserStats();
+            loadUsers();
+
+            const searchBtn = document.getElementById('user-search-button');
+            const resetBtn = document.getElementById('user-reset-button');
+            const searchInput = document.getElementById('user-search-input');
+            const levelSelect = document.getElementById('user-level-select');
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => loadUsers());
+            }
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    if (levelSelect) levelSelect.selectedIndex = 0;
+                    loadUsers();
+                });
+            }
+        });
+    </script>
+    </body>
+    </html>

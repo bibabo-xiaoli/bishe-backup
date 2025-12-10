@@ -1,0 +1,74 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="back-btn" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<view class="container bg-black">
+  <!-- Camera Viewfinder Simulation -->
+  <view class="camera-view">
+    <image class="camera-preview" src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" mode="aspectFill"></image>
+    
+    <!-- Scanning Overlay -->
+    <view class="scan-overlay">
+      <view class="scan-box">
+        <view class="corner tl"></view>
+        <view class="corner tr"></view>
+        <view class="corner bl"></view>
+        <view class="corner br"></view>
+        <!-- Scan Line Animation -->
+        <view class="scan-line"></view>
+      </view>
+      <text class="scan-tip">对准物品自动识别</text>
+    </view>
+  </view>
+
+  <!-- Bottom Controls -->
+  <view class="bottom-controls">
+    <view class="control-item" bindtap="chooseImage">
+      <view class="icon-circle glass">
+        <image class="icon-control" src="/image/image.png"></image> <!-- Fallback icon logic if needed -->
+      </view>
+      <text class="control-text">相册</text>
+    </view>
+    
+    <view class="shutter-btn" bindtap="takePhoto">
+      <view class="shutter-inner"></view>
+    </view>
+
+    <view class="control-item" bindtap="toggleFlash">
+      <view class="icon-circle glass">
+        <image class="icon-control" src="/image/lightning.png"></image>
+      </view>
+      <text class="control-text">开灯</text>
+    </view>
+  </view>
+
+  <!-- Recognition Result Pop-up -->
+  <view class="result-popup {{showResult ? 'show' : ''}}">
+    <view class="result-content">
+      <image class="result-img" src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" mode="aspectFill"></image>
+      <view class="result-info">
+        <view class="result-header">
+          <text class="result-name">PET 塑料瓶</text>
+          <text class="result-tag bg-green-100 text-green">可回收物</text>
+        </view>
+        <view class="result-points">
+          <text class="text-gray">预估积分：</text>
+          <text class="text-green-bold">10</text>
+        </view>
+        <text class="result-tip">请倒空液体，压扁投放</text>
+      </view>
+    </view>
+    <view class="result-actions">
+      <button class="btn-gray" bindtap="closeResult">报错</button>
+      <button class="btn-green" bindtap="confirmRecycle">确认投放</button>
+    </view>
+  </view>
+</view>

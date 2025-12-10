@@ -1,0 +1,132 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">预约回收</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-white" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- Progress Steps -->
+  <view class="steps-container">
+    <view class="step-item">
+      <view class="step-circle active">1</view>
+      <text class="step-text active">选择物品</text>
+    </view>
+    <view class="step-line active"></view>
+    <view class="step-item">
+      <view class="step-circle bg-light-green text-green">2</view>
+      <text class="step-text text-gray">预约时间</text>
+    </view>
+    <view class="step-line"></view>
+    <view class="step-item">
+      <view class="step-circle bg-gray text-gray">3</view>
+      <text class="step-text text-gray">确认订单</text>
+    </view>
+  </view>
+
+  <view class="content-padding">
+    <!-- Category Selection -->
+    <view class="section">
+      <view class="section-title">回收品类</view>
+      <view class="category-grid">
+        <view class="cat-card {{selectedCategory === 'box' ? 'active' : ''}}" bindtap="selectCategory" data-id="box">
+          <view class="check-badge" wx:if="{{selectedCategory === 'box'}}">
+            <image class="icon-check" src="/image/check-circle.png"></image>
+          </view>
+          <image class="cat-icon" src="/image/package.png"></image>
+          <text class="cat-name">纸板箱</text>
+        </view>
+        <view class="cat-card {{selectedCategory === 'clothes' ? 'active' : ''}}" bindtap="selectCategory" data-id="clothes">
+          <image class="cat-icon" src="/image/t-shirt.png"></image>
+          <text class="cat-name">旧衣物</text>
+        </view>
+        <view class="cat-card {{selectedCategory === 'appliance' ? 'active' : ''}}" bindtap="selectCategory" data-id="appliance">
+          <image class="cat-icon" src="/image/monitor.png"></image>
+          <text class="cat-name">家电</text>
+        </view>
+        <view class="cat-card {{selectedCategory === 'book' ? 'active' : ''}}" bindtap="selectCategory" data-id="book">
+          <image class="cat-icon" src="/image/book.png"></image>
+          <text class="cat-name">书籍</text>
+        </view>
+        <view class="cat-card {{selectedCategory === 'bottle' ? 'active' : ''}}" bindtap="selectCategory" data-id="bottle">
+          <image class="cat-icon" src="/image/beer-bottle.png"></image>
+          <text class="cat-name">塑料瓶</text>
+        </view>
+        <view class="cat-card {{selectedCategory === 'other' ? 'active' : ''}}" bindtap="selectCategory" data-id="other">
+          <image class="cat-icon" src="/image/squares-four.png"></image>
+          <text class="cat-name">其他</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Weight Estimation -->
+    <view class="section">
+      <view class="section-title">预估重量</view>
+      <view class="weight-card">
+        <view class="circle-btn" bindtap="decreaseWeight">
+          <image class="icon-sm" src="/image/minus.png"></image>
+        </view>
+        <view class="weight-display">
+          <text class="weight-val">{{weight}}-{{weight + 5}}</text>
+          <text class="weight-unit">kg</text>
+        </view>
+        <view class="circle-btn" bindtap="increaseWeight">
+          <image class="icon-sm" src="/image/plus.png"></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- Address -->
+    <view class="section">
+      <view class="section-title">上门地址</view>
+      <view class="address-card">
+        <view class="icon-box-orange">
+          <image class="icon-map-pin" src="/image/map-pin.png"></image>
+        </view>
+        <view class="address-content">
+          <view class="addr-row">
+            <text class="addr-tag">家</text>
+            <text class="addr-contact">张三 138****0000</text>
+          </view>
+          <text class="addr-text">北京市朝阳区阳光100国际公寓A座1202</text>
+        </view>
+        <image class="icon-arrow" src="/image/caret-right.png"></image>
+      </view>
+    </view>
+
+    <!-- Upload Photos -->
+    <view class="section">
+      <view class="section-title">物品照片 (可选)</view>
+      <view class="upload-row">
+        <view class="upload-box" bindtap="chooseImage">
+          <image class="icon-camera" src="/image/camera.png" wx:if="{{!imageSrc}}"></image>
+          <text class="upload-text" wx:if="{{!imageSrc}}">添加照片</text>
+          <image class="preview-img" src="{{imageSrc}}" mode="aspectFill" wx:if="{{imageSrc}}"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 100px;"></view>
+</scroll-view>
+
+<!-- Bottom Action Bar -->
+<view class="bottom-bar">
+  <view class="estimate-info">
+    <text class="est-label">预估积分</text>
+    <view class="est-val-box">
+      <text class="est-num">150</text>
+      <text class="est-unit">分</text>
+    </view>
+  </view>
+  <button class="submit-btn" bindtap="submitOrder">
+    立即预约
+    <image class="icon-arrow-white" src="/image/caret-right.png"></image>
+  </button>
+</view>

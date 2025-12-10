@@ -1,0 +1,57 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/ranking/ranking",
+    "pages/community/community",
+    "pages/profile/profile",
+    "pages/appointment/appointment",
+    "pages/appointment/success/success",
+    "pages/orders/orders",
+    "pages/stations/stations",
+    "pages/guide/guide",
+    "pages/guide/detail/detail",
+    "pages/mall/mall",
+    "pages/identify/identify"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "绿色回收",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#3F7745",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "image/house.png",
+        "selectedIconPath": "image/house.png"
+      },
+      {
+        "pagePath": "pages/ranking/ranking",
+        "text": "排行榜",
+        "iconPath": "image/medal.png",
+        "selectedIconPath": "image/medal.png"
+      },
+      {
+        "pagePath": "pages/community/community",
+        "text": "社区",
+        "iconPath": "image/users.png",
+        "selectedIconPath": "image/users.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "image/user.png",
+        "selectedIconPath": "image/user.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

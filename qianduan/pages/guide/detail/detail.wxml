@@ -1,0 +1,56 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2 text-white">{{info.name}}</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-white">
+  <!-- Header -->
+  <view class="header-bg bg-{{info.color}}">
+    <image class="header-icon-bg" src="{{info.icon}}"></image>
+    <view class="header-content">
+      <text class="header-title">{{info.name}}</text>
+      <text class="header-subtitle">{{info.enName}}</text>
+    </view>
+  </view>
+
+  <!-- Content -->
+  <view class="content-box">
+    <!-- Requirements -->
+    <view class="section">
+      <view class="section-title border-{{info.color}}">投放要求</view>
+      <view class="req-list bg-{{info.color}}-light">
+        <block wx:for="{{info.requirements}}" wx:key="*this">
+          <view class="req-item">
+            <view class="dot bg-{{info.color}}"></view>
+            <text>{{item}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- Items -->
+    <view class="section">
+      <view class="section-title border-{{info.color}}">主要包括</view>
+      <view class="items-grid">
+        <block wx:for="{{info.items}}" wx:key="name">
+          <view class="item-card">
+            <view class="item-icon-circle bg-gray-100">
+              <image class="item-icon tint-{{info.color}}" src="{{item.icon}}"></image> <!-- Fallback icon logic handled in JS or CSS -->
+            </view>
+            <text class="item-name">{{item.name}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 40px;"></view>
+</scroll-view>

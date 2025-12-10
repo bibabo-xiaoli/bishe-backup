@@ -1,0 +1,113 @@
+<!--index.wxml-->
+
+<!-- Custom Navigation Bar -->
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="nav-title">绿色回收</view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<!-- Content -->
+<scroll-view scroll-y class="content" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  
+  <!-- Hero Banner -->
+  <view class="section">
+    <view class="hero-card">
+      <image class="hero-bg" src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" mode="aspectFill"></image>
+      <view class="hero-overlay">
+        <text class="hero-title">行为激励驱动</text>
+        <text class="hero-subtitle">让环保成为一种生活方式</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Stats Card -->
+  <view class="section">
+    <view class="stats-card">
+      <view class="stats-left">
+        <text class="stats-label">累计减碳</text>
+        <view class="stats-value-box">
+          <text class="stats-value">2,580</text>
+          <text class="stats-unit">g</text>
+        </view>
+        <view class="stats-badge">
+          <image class="badge-icon" src="/image/leaf.png"></image>
+          <text>击败 85% 用户</text>
+        </view>
+      </view>
+      <view class="stats-right">
+        <view class="points-circle">
+          <text class="points-label">我的积分</text>
+          <text class="points-num">1,250</text>
+          <view class="exchange-btn" bindtap="navigateTo" data-url="/pages/mall/mall">
+            <text>去兑换</text>
+            <image class="icon-xs" src="/image/caret-right.png"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Grid Menu -->
+  <view class="section grid-menu">
+    <view class="grid-item bg-blue" bindtap="navigateTo" data-url="/pages/identify/identify">
+      <image class="grid-icon" src="/image/camera.png"></image>
+      <text class="grid-title">智能识别</text>
+      <text class="grid-desc">拍照自动分类</text>
+    </view>
+    <view class="grid-item bg-green" bindtap="navigateTo" data-url="/pages/appointment/appointment">
+      <image class="grid-icon" src="/image/truck.png"></image>
+      <text class="grid-title">预约回收</text>
+      <text class="grid-desc">上门服务</text>
+    </view>
+    <view class="grid-item bg-orange" bindtap="navigateTo" data-url="/pages/stations/stations">
+      <image class="grid-icon" src="/image/map-pin.png"></image>
+      <text class="grid-title">附近网点</text>
+      <text class="grid-desc">查找投放点</text>
+    </view>
+    <view class="grid-item bg-purple" bindtap="navigateTo" data-url="/pages/guide/guide">
+      <image class="grid-icon" src="/image/book-open.png"></image>
+      <text class="grid-title">分类指南</text>
+      <text class="grid-desc">知识库</text>
+    </view>
+  </view>
+
+  <!-- Recent Activity -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">最近动态</text>
+      <view class="section-more">
+        <text>查看全部</text>
+        <image class="icon-xs" src="/image/caret-right.png"></image>
+      </view>
+    </view>
+    <view class="activity-list">
+      <view class="activity-item">
+        <view class="activity-icon-box bg-green-light">
+          <image class="activity-icon" src="/image/leaf.png"></image>
+        </view>
+        <view class="activity-info">
+          <text class="activity-name">完成一次塑料瓶回收</text>
+          <text class="activity-time">2小时前</text>
+        </view>
+        <text class="activity-points">+25</text>
+      </view>
+      <view class="divider-line"></view>
+      <view class="activity-item">
+        <view class="activity-icon-box bg-blue-light">
+          <image class="activity-icon" src="/image/scan.png"></image>
+        </view>
+        <view class="activity-info">
+          <text class="activity-name">识别成功：旧报纸</text>
+          <text class="activity-time">昨天 14:30</text>
+        </view>
+        <text class="activity-points">+5</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 40px;"></view>
+</scroll-view>

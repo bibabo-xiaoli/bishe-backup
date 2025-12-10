@@ -1,0 +1,126 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-gray-50" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">积分商城</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- Header -->
+  <view class="mall-header">
+    <view class="points-row">
+      <view>
+        <text class="points-label">可用积分</text>
+        <text class="points-val">1,280</text>
+      </view>
+      <view class="history-btn">
+        <text>兑换记录</text>
+        <image class="icon-xs" src="/image/caret-right.png"></image>
+      </view>
+    </view>
+    
+    <!-- Categories -->
+    <view class="mall-cats">
+      <view class="cat-item">
+        <view class="cat-icon-circle bg-orange-100">
+          <image class="cat-icon icon-orange" src="/image/gift.png"></image>
+        </view>
+        <text class="cat-name">生活用品</text>
+      </view>
+      <view class="cat-item">
+        <view class="cat-icon-circle bg-blue-100">
+          <image class="cat-icon icon-blue" src="/image/ticket.png"></image> <!-- Fallback if ticket not present -->
+        </view>
+        <text class="cat-name">优惠券</text>
+      </view>
+      <view class="cat-item">
+        <view class="cat-icon-circle bg-red-100">
+          <image class="cat-icon icon-red" src="/image/heart.png"></image>
+        </view>
+        <text class="cat-name">公益捐赠</text>
+      </view>
+      <view class="cat-item">
+        <view class="cat-icon-circle bg-purple-100">
+          <image class="cat-icon icon-purple" src="/image/star.png"></image>
+        </view>
+        <text class="cat-name">抽奖</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Product List -->
+  <view class="product-section">
+    <text class="section-title">热门兑换</text>
+    <view class="product-grid">
+      <!-- Product 1 -->
+      <view class="product-card">
+        <image class="product-img" src="https://images.unsplash.com/photo-1599950753725-cb5f804543a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" mode="aspectFill"></image>
+        <view class="product-info">
+          <text class="product-name">环保帆布袋 大容量购物袋</text>
+          <view class="product-bottom">
+            <view class="price-box">
+              <text class="price-val">500</text>
+              <text class="price-unit">分</text>
+            </view>
+            <button class="exchange-btn">兑换</button>
+          </view>
+        </view>
+      </view>
+
+      <!-- Product 2 -->
+      <view class="product-card">
+        <image class="product-img" src="https://images.unsplash.com/photo-1621251923067-15c0d54f5904?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" mode="aspectFill"></image>
+        <view class="product-info">
+          <text class="product-name">再生纸笔记本 文艺复古</text>
+          <view class="product-bottom">
+            <view class="price-box">
+              <text class="price-val">300</text>
+              <text class="price-unit">分</text>
+            </view>
+            <button class="exchange-btn">兑换</button>
+          </view>
+        </view>
+      </view>
+
+      <!-- Product 3 -->
+      <view class="product-card">
+        <image class="product-img" src="https://images.unsplash.com/photo-1610452330752-6a7350711db1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" mode="aspectFill"></image>
+        <view class="product-info">
+          <text class="product-name">竹纤维家用纸巾 (3包)</text>
+          <view class="product-bottom">
+            <view class="price-box">
+              <text class="price-val">150</text>
+              <text class="price-unit">分</text>
+            </view>
+            <button class="exchange-btn">兑换</button>
+          </view>
+        </view>
+      </view>
+
+      <!-- Product 4 -->
+      <view class="product-card">
+        <view class="product-img-placeholder bg-green-50">
+          <image class="icon-tree" src="/image/tree.png"></image>
+        </view>
+        <view class="product-info">
+          <text class="product-name">种一棵树 (阿拉善公益)</text>
+          <view class="product-bottom">
+            <view class="price-box">
+              <text class="price-val">2000</text>
+              <text class="price-unit">分</text>
+            </view>
+            <button class="exchange-btn">捐赠</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 40px;"></view>
+</scroll-view>

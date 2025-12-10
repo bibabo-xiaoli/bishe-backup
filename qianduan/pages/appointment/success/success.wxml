@@ -1,0 +1,41 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/x.png"></image>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<view class="container bg-white" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <view class="content">
+    <view class="success-icon-box">
+      <image class="icon-success" src="/image/check-circle.png"></image>
+    </view>
+    <text class="success-title">预约成功！</text>
+    <text class="success-desc">回收员将在预约时间段内上门，请保持电话畅通。</text>
+
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-label">预约时间</text>
+        <text class="info-val">明天 09:00 - 11:00</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">回收品类</text>
+        <text class="info-val">纸板箱, 旧衣物</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">预估积分</text>
+        <text class="info-val green">150 分</text>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <button class="btn-primary" bindtap="viewOrders">查看订单详情</button>
+      <button class="btn-secondary" bindtap="goHome">返回首页</button>
+    </view>
+  </view>
+</view>

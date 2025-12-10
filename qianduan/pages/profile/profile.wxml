@@ -1,0 +1,105 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="capsule-right">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-gray-50">
+  <!-- User Header -->
+  <view class="user-header">
+    <view class="user-info-row">
+      <view class="avatar-box">
+        <image class="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+      </view>
+      <view class="user-details">
+        <text class="user-name">环保小卫士</text>
+        <view class="user-level">
+          <image class="icon-xs" src="/image/crown.png"></image> <!-- Using crown as medal fallback -->
+          <text>Lv.3 绿色达人</text>
+        </view>
+      </view>
+      <image class="icon-gear" src="/image/gear.png"></image>
+    </view>
+
+    <!-- Stats -->
+    <view class="stats-row">
+      <view class="stat-item bg-green-50">
+        <text class="stat-label">累计减碳</text>
+        <view class="stat-val text-green">23.5 <text class="stat-unit">kg</text></view>
+      </view>
+      <view class="stat-item bg-blue-50">
+        <text class="stat-label">回收次数</text>
+        <view class="stat-val text-blue">12 <text class="stat-unit">次</text></view>
+      </view>
+      <view class="stat-item bg-orange-50">
+        <text class="stat-label">当前积分</text>
+        <view class="stat-val text-orange">1,280</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Menu List -->
+  <view class="menu-list">
+    <!-- Order Management -->
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">我的订单</text>
+        <view class="card-more">
+          <text>全部</text>
+          <image class="icon-arrow" src="/image/caret-right.png"></image>
+        </view>
+      </view>
+      <view class="order-grid">
+        <view class="order-item">
+          <image class="order-icon" src="/image/clock.png"></image>
+          <text>待上门</text>
+        </view>
+        <view class="order-item">
+          <image class="order-icon" src="/image/package.png"></image>
+          <text>进行中</text>
+        </view>
+        <view class="order-item">
+          <image class="order-icon" src="/image/check-circle.png"></image>
+          <text>已完成</text>
+        </view>
+        <view class="order-item">
+          <image class="order-icon" src="/image/headset.png"></image>
+          <text>售后</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Other Menu Items -->
+    <view class="card menu-group">
+      <view class="menu-item border-bottom">
+        <view class="menu-left">
+          <image class="menu-icon icon-green" src="/image/map-pin.png"></image>
+          <text>地址管理</text>
+        </view>
+        <image class="icon-arrow" src="/image/caret-right.png"></image>
+      </view>
+      <view class="menu-item border-bottom">
+        <view class="menu-left">
+          <image class="menu-icon icon-blue" src="/image/users.png"></image>
+          <text>邀请好友</text>
+        </view>
+        <view class="menu-right">
+          <text class="tag-orange">得500积分</text>
+          <image class="icon-arrow" src="/image/caret-right.png"></image>
+        </view>
+      </view>
+      <view class="menu-item">
+        <view class="menu-left">
+          <image class="menu-icon icon-gray" src="/image/headset.png"></image>
+          <text>联系客服</text>
+        </view>
+        <image class="icon-arrow" src="/image/caret-right.png"></image>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 100px;"></view>
+</scroll-view>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回收订单 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3F7745',
+                        'primary-light': '#79A26A',
+                        'primary-dark': '#39561F',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i>
+                        <span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i>
+                        <span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i>
+                        <span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i>
+                        <span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-clipboard-text text-lg"></i>
+                        <span>回收订单</span>
+                        <span id="sidebar-pending-count" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i>
+                        <span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i>
+                        <span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i>
+                        <span>售后管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i>
+                        <span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">管理员</p>
+                        <p class="text-xs text-gray-500">admin@recycle.com</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-white">
+                        <i class="ph ph-sign-out text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-lg font-bold text-gray-800">回收订单管理</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="bg-white border border-primary text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-primary hover:text-white transition">
+                        <i class="ph ph-export"></i>
+                        导出订单
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto">
+                <!-- Stats -->
+                <div class="p-6 pb-0">
+                    <div class="grid grid-cols-5 gap-4 mb-6">
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-blue-500">
+                            <p id="orders-stat-total" class="text-2xl font-bold text-gray-800">0</p>
+                            <p class="text-xs text-gray-500">全部订单</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-500">
+                            <p id="orders-stat-pending" class="text-2xl font-bold text-orange-600">0</p>
+                            <p class="text-xs text-gray-500">待上门</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-blue-400">
+                            <p id="orders-stat-processing" class="text-2xl font-bold text-blue-600">0</p>
+                            <p class="text-xs text-gray-500">进行中</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-green-500">
+                            <p id="orders-stat-completed" class="text-2xl font-bold text-green-600">0</p>
+                            <p class="text-xs text-gray-500">已完成</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-gray-400">
+                            <p id="orders-stat-canceled" class="text-2xl font-bold text-gray-600">0</p>
+                            <p class="text-xs text-gray-500">已取消</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="bg-white px-6 border-b flex gap-6">
+                    <button class="order-tab py-3 border-b-2 border-primary text-primary font-medium text-sm" data-status="">全部订单</button>
+                    <button class="order-tab py-3 text-gray-500 text-sm hover:text-gray-700" data-status="1">待上门 <span id="tab-pending-count" class="bg-orange-100 text-orange-600 px-1.5 rounded text-xs">0</span></button>
+                    <button class="order-tab py-3 text-gray-500 text-sm hover:text-gray-700" data-status="2">进行中 <span id="tab-processing-count" class="bg-blue-100 text-blue-600 px-1.5 rounded text-xs">0</span></button>
+                    <button class="order-tab py-3 text-gray-500 text-sm hover:text-gray-700" data-status="3">已完成</button>
+                    <button class="order-tab py-3 text-gray-500 text-sm hover:text-gray-700" data-status="4">已取消</button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white px-6 py-4 border-b">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <input id="order-search-input" type="text" placeholder="订单号/用户名/手机号" class="border rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <select id="order-category-select" class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>全部品类</option>
+                            <option>纸板箱</option>
+                            <option>旧衣物</option>
+                            <option>塑料瓶</option>
+                            <option>废旧家电</option>
+                            <option>书籍</option>
+                        </select>
+                        <select id="order-collector-select" class="border rounded-lg px-3 py-2 text-sm text-gray-600">
+                            <option>全部回收员</option>
+                            <option>李师傅</option>
+                            <option>张师傅</option>
+                            <option>王师傅</option>
+                        </select>
+                        <div class="flex items-center gap-2">
+                            <input id="order-date-start" type="date" class="border rounded-lg px-3 py-2 text-sm">
+                            <span class="text-gray-400">至</span>
+                            <input id="order-date-end" type="date" class="border rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <button id="order-search-btn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">查询</button>
+                        <button id="order-reset-btn" class="text-gray-500 text-sm hover:text-primary">重置</button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="p-6">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-left text-gray-600">
+                                <tr>
+                                    <th class="px-4 py-3 w-10"><input type="checkbox" class="rounded"></th>
+                                    <th class="px-4 py-3">订单号</th>
+                                    <th class="px-4 py-3">用户信息</th>
+                                    <th class="px-4 py-3">回收品类</th>
+                                    <th class="px-4 py-3">预估重量</th>
+                                    <th class="px-4 py-3">预约时间</th>
+                                    <th class="px-4 py-3">上门地址</th>
+                                    <th class="px-4 py-3">回收员</th>
+                                    <th class="px-4 py-3">状态</th>
+                                    <th class="px-4 py-3">积分</th>
+                                    <th class="px-4 py-3">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body" class="divide-y">
+                                <tr>
+                                    <td class="px-4 py-6 text-center text-gray-400 text-sm" colspan="11">加载中...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <div class="px-4 py-3 border-t flex items-center justify-between">
+                            <span id="orders-pagination-info" class="text-sm text-gray-500">共 0 条记录</span>
+                            <div class="flex gap-2 items-center">
+                                <button id="orders-prev-page" class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
+                                <span class="text-sm text-gray-500">第 <span id="orders-current-page">1</span> 页</span>
+                                <button id="orders-next-page" class="px-3 py-1 border rounded text-sm">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl w-[720px] max-h-[80vh] overflow-hidden">
+            <div class="p-6 border-b flex items-center justify-between">
+                <h3 class="text-lg font-bold">订单详情</h3>
+                <button onclick="document.getElementById('orderDetailModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            <div id="order-detail-body" class="p-6 text-sm space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000';
+        const ORDER_PAGE_SIZE = 10;
+        let currentOrderPage = 1;
+        let currentOrderStatus = '';
+        let currentOrderTotal = 0;
+
+        function updateOrderStats(stats) {
+            if (!stats) return;
+            const totalEl = document.getElementById('orders-stat-total');
+            const pendingEl = document.getElementById('orders-stat-pending');
+            const processingEl = document.getElementById('orders-stat-processing');
+            const completedEl = document.getElementById('orders-stat-completed');
+            const canceledEl = document.getElementById('orders-stat-canceled');
+            const sidebarPending = document.getElementById('sidebar-pending-count');
+            const tabPending = document.getElementById('tab-pending-count');
+            const tabProcessing = document.getElementById('tab-processing-count');
+
+            if (totalEl) totalEl.textContent = stats.total_orders ?? 0;
+            if (pendingEl) pendingEl.textContent = stats.pending ?? 0;
+            if (processingEl) processingEl.textContent = stats.processing ?? 0;
+            if (completedEl) completedEl.textContent = stats.completed ?? 0;
+            if (canceledEl) canceledEl.textContent = stats.canceled ?? 0;
+            if (sidebarPending) sidebarPending.textContent = stats.pending ?? 0;
+            if (tabPending) tabPending.textContent = stats.pending ?? 0;
+            if (tabProcessing) tabProcessing.textContent = stats.processing ?? 0;
+        }
+
+        function renderOrderBadge(status, label) {
+            let cls = 'bg-gray-200 text-gray-500';
+            if (status === 1) cls = 'bg-orange-100 text-orange-600';
+            else if (status === 2) cls = 'bg-blue-100 text-blue-600';
+            else if (status === 3) cls = 'bg-green-100 text-green-600';
+            else if (status === 4) cls = 'bg-gray-200 text-gray-500';
+            return `<span class="${cls} px-2 py-0.5 rounded text-xs font-medium">${label || '未知'}</span>`;
+        }
+
+        function renderOrderRow(order) {
+            const tr = document.createElement('tr');
+            let rowBg = '';
+            if (order.status === 1) rowBg = 'bg-orange-50/30';
+            else if (order.status === 2) rowBg = 'bg-blue-50/30';
+            else if (order.status === 4) rowBg = 'bg-gray-50/50';
+            tr.className = `hover:bg-gray-50 ${rowBg}`.trim();
+
+            const cats = (order.categories || []).map(name =>
+                `<span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs mr-1 mb-1 inline-block">${name}</span>`
+            ).join('');
+
+            let pointsHtml = '<span class="text-gray-400">-</span>';
+            if (order.status === 3 && order.actual_points != null) {
+                pointsHtml = `<span class="text-primary font-medium">+${order.actual_points}</span>`;
+            } else if (order.estimated_points != null) {
+                pointsHtml = `<span class="text-gray-500">~${order.estimated_points}</span>`;
+            }
+
+            let collectorHtml = '<span class="text-orange-500">待分配</span>';
+            if (order.collector_name) {
+                collectorHtml = `
+                    <div class="flex items-center gap-1">
+                        <span class="text-gray-700">${order.collector_name}</span>
+                    </div>`;
+            }
+
+            const userPhone = order.user_phone || '-';
+            const dateText = order.appointment_date || '-';
+            const timeSlot = order.time_slot || '';
+            const address = order.address || '-';
+
+            let actionHtml = '<button class="order-detail-btn text-gray-400 hover:text-gray-600">详情</button>';
+            if (order.status === 1) {
+                actionHtml = `
+                    <div class="flex items-center gap-2">
+                        <button class="text-primary hover:underline">分配</button>
+                        <button class="order-detail-btn text-gray-400 hover:text-gray-600">详情</button>
+                    </div>`;
+            } else if (order.status === 2) {
+                actionHtml = `
+                    <div class="flex items-center gap-2">
+                        <button class="text-primary hover:underline">跟踪</button>
+                        <button class="order-detail-btn text-gray-400 hover:text-gray-600">详情</button>
+                    </div>`;
+            }
+
+            tr.innerHTML = `
+                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                <td class="px-4 py-3 font-mono text-xs text-gray-600">${order.order_no || ''}</td>
+                <td class="px-4 py-3">
+                    <div>
+                        <p class="font-medium">${order.user_name || '-'}</p>
+                        <p class="text-xs text-gray-400">${userPhone}</p>
+                    </div>
+                </td>
+                <td class="px-4 py-3">${cats}</td>
+                <td class="px-4 py-3">${order.estimated_weight || '-'}</td>
+                <td class="px-4 py-3 text-gray-600">
+                    <p>${dateText}</p>
+                    <p class="text-xs text-gray-400">${timeSlot}</p>
+                </td>
+                <td class="px-4 py-3 max-w-[150px]"><p class="truncate text-gray-600 text-xs">${address}</p></td>
+                <td class="px-4 py-3">${collectorHtml}</td>
+                <td class="px-4 py-3">${renderOrderBadge(order.status, order.status_label)}</td>
+                <td class="px-4 py-3">${pointsHtml}</td>
+                <td class="px-4 py-3">${actionHtml}</td>
+            `;
+
+            const detailBtn = tr.querySelector('.order-detail-btn');
+            if (detailBtn) {
+                detailBtn.addEventListener('click', () => openOrderDetail(order.id));
+            }
+            return tr;
+        }
+
+        async function loadOrders(page = 1) {
+            const tbody = document.getElementById('orders-table-body');
+            const paginationInfo = document.getElementById('orders-pagination-info');
+            const pageEl = document.getElementById('orders-current-page');
+            if (!tbody) return;
+
+            currentOrderPage = page;
+
+            const searchInput = document.getElementById('order-search-input');
+            const dateStartEl = document.getElementById('order-date-start');
+            const dateEndEl = document.getElementById('order-date-end');
+
+            const params = new URLSearchParams();
+            params.set('page', String(page));
+            params.set('per_page', String(ORDER_PAGE_SIZE));
+            if (currentOrderStatus) params.set('status', currentOrderStatus);
+            if (searchInput && searchInput.value.trim()) {
+                params.set('search', searchInput.value.trim());
+            }
+            if (dateStartEl && dateStartEl.value) params.set('date_start', dateStartEl.value);
+            if (dateEndEl && dateEndEl.value) params.set('date_end', dateEndEl.value);
+
+            try {
+                const res = await fetch(`${API_BASE}/api/orders?${params.toString()}`);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                tbody.innerHTML = '';
+                const list = data.items || [];
+                if (list.length === 0) {
+                    tbody.innerHTML = '<tr><td class="px-4 py-6 text-center text-gray-400 text-sm" colspan="11">暂无订单记录</td></tr>';
+                } else {
+                    list.forEach(order => {
+                        tbody.appendChild(renderOrderRow(order));
+                    });
+                }
+
+                currentOrderTotal = data.total ?? 0;
+                if (paginationInfo) {
+                    paginationInfo.textContent = `共 ${currentOrderTotal} 条记录`;
+                }
+                if (pageEl) pageEl.textContent = String(currentOrderPage);
+                if (data.stats) updateOrderStats(data.stats);
+            } catch (e) {
+                console.error('加载订单列表失败', e);
+            }
+        }
+
+        async function openOrderDetail(orderId) {
+            const modal = document.getElementById('orderDetailModal');
+            const body = document.getElementById('order-detail-body');
+            if (!modal || !body) return;
+
+            body.innerHTML = '<p class="text-gray-400 text-sm">加载中...</p>';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                const res = await fetch(`${API_BASE}/api/orders/${orderId}`);
+                if (!res.ok) {
+                    body.innerHTML = '<p class="text-red-500 text-sm">加载失败</p>';
+                    return;
+                }
+                const data = await res.json();
+                const itemsHtml = (data.items || []).map(item => `
+                    <div class="flex justify-between py-1 border-b border-dashed">
+                        <span class="text-gray-600">${item.category_name}</span>
+                        <span class="text-gray-500 text-xs">预估：${item.estimated_weight || '-'} | 实际：${item.actual_weight ?? '-'} kg | 积分：${item.points_earned ?? '-'}</span>
+                    </div>
+                `).join('') || '<p class="text-gray-400 text-sm">暂无品类明细</p>';
+
+                const address = data.address || '-';
+                const user = data.user || {};
+                const collector = data.collector || null;
+
+                body.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <p class="text-xs text-gray-400">订单号</p>
+                            <p class="font-mono text-sm text-gray-800">${data.order_no}</p>
+                        </div>
+                        <div>${renderOrderBadge(data.status, data.status_label)}</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">用户信息</p>
+                            <p class="text-gray-800 text-sm">${user.nickname || '-'} <span class="text-xs text-gray-400 ml-2">${user.phone || '-'}</span></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">预约时间</p>
+                            <p class="text-gray-800 text-sm">${data.appointment_date || '-'} ${data.time_slot || ''}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">上门地址</p>
+                            <p class="text-gray-800 text-sm">${address}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">回收员</p>
+                            <p class="text-gray-800 text-sm">${collector ? collector.name : '待分配'}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 mb-2">品类明细</p>
+                        <div class="bg-gray-50 rounded-lg p-3 space-y-1">${itemsHtml}</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-xs text-gray-500 mb-1">预估积分</p>
+                            <p class="text-lg font-bold text-gray-700">${data.estimated_points ?? '-'}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-xs text-gray-500 mb-1">实际积分</p>
+                            <p class="text-lg font-bold text-primary">${data.actual_points ?? '-'}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-xs text-gray-500 mb-1">减碳量</p>
+                            <p class="text-lg font-bold text-green-600">${data.carbon_saved_kg ?? 0} kg</p>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('加载订单详情失败', e);
+                body.innerHTML = '<p class="text-red-500 text-sm">加载失败</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
+
+            const searchBtn = document.getElementById('order-search-btn');
+            const resetBtn = document.getElementById('order-reset-btn');
+            const searchInput = document.getElementById('order-search-input');
+            const dateStartEl = document.getElementById('order-date-start');
+            const dateEndEl = document.getElementById('order-date-end');
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => loadOrders(1));
+            }
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    if (dateStartEl) dateStartEl.value = '';
+                    if (dateEndEl) dateEndEl.value = '';
+                    currentOrderStatus = '';
+                    const tabs = document.querySelectorAll('.order-tab');
+                    tabs.forEach(btn => {
+                        btn.classList.remove('border-b-2', 'border-primary', 'text-primary', 'font-medium');
+                        btn.classList.add('text-gray-500');
+                    });
+                    const first = document.querySelector('.order-tab[data-status=""]');
+                    if (first) {
+                        first.classList.add('border-b-2', 'border-primary', 'text-primary', 'font-medium');
+                        first.classList.remove('text-gray-500');
+                    }
+                    loadOrders(1);
+                });
+            }
+
+            const tabs = document.querySelectorAll('.order-tab');
+            tabs.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabs.forEach(other => {
+                        other.classList.remove('border-b-2', 'border-primary', 'text-primary', 'font-medium');
+                        other.classList.add('text-gray-500');
+                    });
+                    btn.classList.add('border-b-2', 'border-primary', 'text-primary', 'font-medium');
+                    btn.classList.remove('text-gray-500');
+                    currentOrderStatus = btn.getAttribute('data-status') || '';
+                    loadOrders(1);
+                });
+            });
+
+            const prevBtn = document.getElementById('orders-prev-page');
+            const nextBtn = document.getElementById('orders-next-page');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentOrderPage > 1) {
+                        loadOrders(currentOrderPage - 1);
+                    }
+                });
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    const maxPage = Math.ceil(currentOrderTotal / ORDER_PAGE_SIZE) || 1;
+                    if (currentOrderPage < maxPage) {
+                        loadOrders(currentOrderPage + 1);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

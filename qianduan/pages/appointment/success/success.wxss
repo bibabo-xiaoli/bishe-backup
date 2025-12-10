@@ -1,0 +1,154 @@
+/** success.wxss */
+.container {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+/* Nav Bar */
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 44px 16px 10px;
+  background: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.icon-nav {
+  width: 24px;
+  height: 24px;
+}
+
+.capsule {
+  width: 87px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.icon-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background-color: #ccc;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.success-icon-box {
+  width: 96px;
+  height: 96px;
+  background-color: #dcfce7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.icon-success {
+  width: 64px;
+  height: 64px;
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%); /* Green */
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.success-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.info-card {
+  width: 100%;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 32px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.info-val {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.green {
+  color: #15803d;
+  font-weight: bold;
+}
+
+.action-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: #3F7745;
+  color: white;
+  padding: 12px;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.btn-secondary {
+  width: 100%;
+  background-color: white;
+  color: #6b7280;
+  padding: 12px;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  margin: 0;
+}

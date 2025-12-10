@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回收品类 - 智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#3F7745', 'primary-light': '#79A26A' } } }
+        }
+    </script>
+    <style>.sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <div class="px-4 mb-2">
+                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-house text-lg"></i><span>控制台</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i><span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i><span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i><span>地址管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i><span>回收订单</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i><span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-package text-lg"></i><span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i><span>售后管理</span>
+                    </a>
+                </div>
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i><span>回收网点</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1"><p class="text-sm font-medium">管理员</p><p class="text-xs text-gray-500">admin@recycle.com</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+	        <div class="flex-1 flex flex-col overflow-hidden">
+	            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+	                <h1 class="text-lg font-bold text-gray-800">回收品类管理</h1>
+	                <button id="btn-open-category-modal" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+	                    <i class="ph ph-plus"></i> 添加品类
+	                </button>
+	            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Category Cards -->
+                <div class="grid grid-cols-6 gap-4 mb-8">
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-blue-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-package text-2xl text-blue-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">纸板箱</h4>
+                        <p class="text-xs text-gray-500">15 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">35% 占比</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-purple-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-t-shirt text-2xl text-purple-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">旧衣物</h4>
+                        <p class="text-xs text-gray-500">20 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">20% 占比</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-green-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-beer-bottle text-2xl text-green-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">塑料瓶</h4>
+                        <p class="text-xs text-gray-500">25 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">28% 占比</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-orange-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-monitor text-2xl text-orange-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">废旧家电</h4>
+                        <p class="text-xs text-gray-500">30 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">8% 占比</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-yellow-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-book text-2xl text-yellow-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">书籍报刊</h4>
+                        <p class="text-xs text-gray-500">12 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">6% 占比</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm text-center hover:shadow-md transition cursor-pointer border-2 border-transparent hover:border-primary">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="ph ph-squares-four text-2xl text-gray-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">其他</h4>
+                        <p class="text-xs text-gray-500">10 积分/kg</p>
+                        <p class="text-xs text-primary mt-2">3% 占比</p>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+	                    <div class="p-4 border-b flex items-center justify-between">
+	                        <h3 class="font-bold text-gray-800">品类详情配置</h3>
+	                        <div class="flex items-center gap-2">
+	                            <input id="category-search-input" type="text" placeholder="搜索品类" class="border rounded-lg px-3 py-1.5 text-sm w-48">
+	                        </div>
+	                    </div>
+	                    <table class="w-full text-sm">
+	                        <thead class="bg-gray-50 text-left text-gray-600">
+	                            <tr>
+	                                <th class="px-4 py-3">品类ID</th>
+	                                <th class="px-4 py-3">品类名称</th>
+	                                <th class="px-4 py-3">图标</th>
+	                                <th class="px-4 py-3">积分单价</th>
+	                                <th class="px-4 py-3">回收量(本月)</th>
+	                                <th class="px-4 py-3">订单数(本月)</th>
+	                                <th class="px-4 py-3">状态</th>
+	                                <th class="px-4 py-3">排序</th>
+	                                <th class="px-4 py-3">操作</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody id="category-table-body" class="divide-y">
+	                            <tr>
+	                                <td colspan="9" class="px-4 py-4 text-center text-gray-400 text-sm">加载中...</td>
+	                            </tr>
+	                        </tbody>
+	                    </table>
+	                </div>
+	            </main>
+	        </div>
+	    </div>
+
+	    <!-- Category Modal -->
+	    <div id="category-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+	        <div class="bg-white rounded-2xl w-[480px] max-h-[90vh] overflow-hidden">
+	            <div class="p-4 border-b flex items-center justify-between">
+	                <h3 id="category-modal-title" class="text-lg font-bold">添加品类</h3>
+	                <button id="category-modal-close" type="button" class="text-gray-400 hover:text-gray-600">
+	                    <i class="ph ph-x text-xl"></i>
+	                </button>
+	            </div>
+	            <form id="category-form">
+	                <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
+	                    <input type="hidden" id="category-id">
+	                    <div>
+	                        <label class="block text-sm font-medium text-gray-700 mb-1">品类名称 <span class="text-red-500">*</span></label>
+	                        <input id="category-name" type="text" placeholder="例如：纸板箱" class="w-full border rounded-lg px-3 py-2 text-sm">
+	                    </div>
+	                    <div>
+	                        <label class="block text-sm font-medium text-gray-700 mb-1">图标类名</label>
+	                        <input id="category-icon" type="text" placeholder="可选，例如：ph-package" class="w-full border rounded-lg px-3 py-2 text-sm">
+	                    </div>
+	                    <div>
+	                        <label class="block text-sm font-medium text-gray-700 mb-1">积分单价 (积分/kg)</label>
+	                        <input id="category-points" type="number" min="0" placeholder="例如：15" class="w-full border rounded-lg px-3 py-2 text-sm">
+	                    </div>
+	                    <div>
+	                        <label class="block text-sm font-medium text-gray-700 mb-1">说明</label>
+	                        <textarea id="category-description" rows="2" placeholder="可选填写品类说明" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
+	                    </div>
+	                    <div>
+	                        <label class="block text-sm font-medium text-gray-700 mb-1">排序值</label>
+	                        <input id="category-sort" type="number" placeholder="数值越小越靠前，可选" class="w-full border rounded-lg px-3 py-2 text-sm">
+	                    </div>
+	                </div>
+	                <div class="p-4 border-t bg-gray-50 flex justify-end gap-3">
+	                    <button id="category-modal-cancel" type="button" class="px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-white">取消</button>
+	                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-sm">保存</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+
+	    <script>
+	        const API_BASE = 'http://127.0.0.1:5000';
+	        const CATEGORY_PAGE_SIZE = 50;
+	        let currentCategoryPage = 1;
+	        let currentCategoryTotal = 0;
+	        const categoryCache = {};
+
+	        async function loadCategories(page = 1) {
+	            const tbody = document.getElementById('category-table-body');
+	            if (!tbody) return;
+
+	            const searchInput = document.getElementById('category-search-input');
+	            const params = new URLSearchParams();
+	            params.set('page', String(page));
+	            params.set('per_page', String(CATEGORY_PAGE_SIZE));
+	            if (searchInput && searchInput.value.trim()) {
+	                params.set('search', searchInput.value.trim());
+	            }
+
+	            tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-4 text-center text-gray-400 text-sm">加载中...</td></tr>';
+
+	            try {
+	                const res = await fetch(`${API_BASE}/api/categories?${params.toString()}`);
+	                if (!res.ok) {
+	                    tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-4 text-center text-red-500 text-sm">加载失败</td></tr>';
+	                    return;
+	                }
+	                const data = await res.json();
+	                currentCategoryPage = data.page || 1;
+	                currentCategoryTotal = data.total || 0;
+
+	                tbody.innerHTML = '';
+	                Object.keys(categoryCache).forEach((key) => {
+	                    delete categoryCache[key];
+	                });
+
+	                const list = data.items || [];
+	                if (!list.length) {
+	                    tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-4 text-center text-gray-400 text-sm">暂无数据</td></tr>';
+	                    return;
+	                }
+
+	                list.forEach((cat) => {
+	                    categoryCache[String(cat.id)] = cat;
+	                    const tr = document.createElement('tr');
+	                    tr.className = 'hover:bg-gray-50';
+	                    const categoryIdText = cat.category_code || `CAT${String(cat.id).padStart(3, '0')}`;
+	                    const pointsText = cat.points_per_kg === null || cat.points_per_kg === undefined || cat.points_per_kg === ''
+	                        ? '-'
+	                        : String(cat.points_per_kg);
+	                    const sortText = cat.sort_order === null || cat.sort_order === undefined || cat.sort_order === ''
+	                        ? '-'
+	                        : String(cat.sort_order);
+	                    tr.innerHTML = `
+	                        <td class="px-4 py-4 text-gray-500 font-mono text-xs">${categoryIdText}</td>
+	                        <td class="px-4 py-4 font-medium">${cat.name || ''}</td>
+	                        <td class="px-4 py-4"><i class="ph ph-package text-2xl text-blue-500"></i></td>
+	                        <td class="px-4 py-4">
+	                            <span class="text-primary font-medium">${pointsText}</span>
+	                            <span class="text-gray-400 text-xs">积分/kg</span>
+	                        </td>
+	                        <td class="px-4 py-4 text-gray-500">-</td>
+	                        <td class="px-4 py-4 text-gray-500">-</td>
+	                        <td class="px-4 py-4"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">启用</span></td>
+	                        <td class="px-4 py-4"><span class="text-gray-600">${sortText}</span></td>
+	                        <td class="px-4 py-4">
+	                            <button class="text-primary hover:underline mr-2" data-action="edit" data-id="${cat.id}">编辑</button>
+	                            <button class="text-gray-400 hover:text-red-500" data-action="delete" data-id="${cat.id}">删除</button>
+	                        </td>
+	                    `;
+	                    tbody.appendChild(tr);
+	                });
+	            } catch (err) {
+	                console.error(err);
+	                tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-4 text-center text-red-500 text-sm">加载失败</td></tr>';
+	            }
+	        }
+
+	        function openCategoryModal(mode, category) {
+	            const modal = document.getElementById('category-modal');
+	            if (!modal) return;
+
+	            const titleEl = document.getElementById('category-modal-title');
+	            const idInput = document.getElementById('category-id');
+	            const nameInput = document.getElementById('category-name');
+	            const iconInput = document.getElementById('category-icon');
+	            const pointsInput = document.getElementById('category-points');
+	            const descInput = document.getElementById('category-description');
+	            const sortInput = document.getElementById('category-sort');
+	            if (!titleEl || !idInput || !nameInput || !iconInput || !pointsInput || !descInput || !sortInput) return;
+
+	            if (mode === 'edit' && category) {
+	                titleEl.textContent = '编辑品类';
+	                idInput.value = category.id;
+	                nameInput.value = category.name || '';
+	                iconInput.value = category.icon || '';
+	                pointsInput.value = category.points_per_kg ?? '';
+	                descInput.value = category.description || '';
+	                sortInput.value = category.sort_order ?? '';
+	            } else {
+	                titleEl.textContent = '添加品类';
+	                idInput.value = '';
+	                nameInput.value = '';
+	                iconInput.value = '';
+	                pointsInput.value = '';
+	                descInput.value = '';
+	                sortInput.value = '';
+	            }
+
+	            modal.classList.remove('hidden');
+	            modal.classList.add('flex');
+	        }
+
+	        function closeCategoryModal() {
+	            const modal = document.getElementById('category-modal');
+	            if (!modal) return;
+	            modal.classList.add('hidden');
+	            modal.classList.remove('flex');
+	        }
+
+	        async function submitCategoryForm(event) {
+	            event.preventDefault();
+	            const idInput = document.getElementById('category-id');
+	            const nameInput = document.getElementById('category-name');
+	            const iconInput = document.getElementById('category-icon');
+	            const pointsInput = document.getElementById('category-points');
+	            const descInput = document.getElementById('category-description');
+	            const sortInput = document.getElementById('category-sort');
+
+	            if (!nameInput || !iconInput || !pointsInput || !descInput || !sortInput) return;
+
+	            const name = nameInput.value.trim();
+	            if (!name) {
+	                alert('请填写品类名称');
+	                return;
+	            }
+
+	            const payload = {
+	                name,
+	                icon: iconInput.value.trim() || null,
+	                points_per_kg: pointsInput.value.trim(),
+	                description: descInput.value.trim() || null,
+	                sort_order: sortInput.value.trim(),
+	            };
+
+	            const isEdit = Boolean(idInput && idInput.value);
+	            const url = isEdit
+	                ? `${API_BASE}/api/categories/${idInput.value}`
+	                : `${API_BASE}/api/categories`;
+	            const method = isEdit ? 'PUT' : 'POST';
+
+	            try {
+	                const res = await fetch(url, {
+	                    method,
+	                    headers: { 'Content-Type': 'application/json' },
+	                    body: JSON.stringify(payload),
+	                });
+	                const data = await res.json().catch(() => ({}));
+	                if (!res.ok) {
+	                    alert(data.error || '保存失败');
+	                    return;
+	                }
+	                closeCategoryModal();
+	                loadCategories(1);
+	            } catch (err) {
+	                console.error(err);
+	                alert('请求失败，请稍后重试');
+	            }
+	        }
+
+	        async function handleCategoryTableClick(event) {
+	            const targetButton = event.target.closest('button');
+	            if (!targetButton) return;
+	            const action = targetButton.dataset.action;
+	            const id = targetButton.dataset.id;
+	            if (!action || !id) return;
+
+	            if (action === 'edit') {
+	                const category = categoryCache[String(id)];
+	                if (!category) {
+	                    alert('未找到品类数据，请刷新后重试');
+	                    return;
+	                }
+	                openCategoryModal('edit', category);
+	            } else if (action === 'delete') {
+	                if (!confirm('确定要删除该品类吗？删除后将无法恢复。')) {
+	                    return;
+	                }
+	                try {
+	                    const res = await fetch(`${API_BASE}/api/categories/${id}`, {
+	                        method: 'DELETE',
+	                    });
+	                    const data = await res.json().catch(() => ({}));
+	                    if (!res.ok) {
+	                        alert(data.error || '删除失败');
+	                        return;
+	                    }
+	                    loadCategories(1);
+	                } catch (err) {
+	                    console.error(err);
+	                    alert('请求失败，请稍后重试');
+	                }
+	            }
+	        }
+
+	        document.addEventListener('DOMContentLoaded', () => {
+	            const searchInput = document.getElementById('category-search-input');
+	            if (searchInput) {
+	                searchInput.addEventListener('keyup', (event) => {
+	                    if (event.key === 'Enter') {
+	                        loadCategories(1);
+	                    }
+	                });
+	            }
+
+	            const addBtn = document.getElementById('btn-open-category-modal');
+	            if (addBtn) {
+	                addBtn.addEventListener('click', () => openCategoryModal('create'));
+	            }
+
+	            const modalClose = document.getElementById('category-modal-close');
+	            const modalCancel = document.getElementById('category-modal-cancel');
+	            if (modalClose) modalClose.addEventListener('click', closeCategoryModal);
+	            if (modalCancel) modalCancel.addEventListener('click', closeCategoryModal);
+
+	            const modal = document.getElementById('category-modal');
+	            if (modal) {
+	                modal.addEventListener('click', (event) => {
+	                    if (event.target === modal) {
+	                        closeCategoryModal();
+	                    }
+	                });
+	            }
+
+	            const form = document.getElementById('category-form');
+	            if (form) {
+	                form.addEventListener('submit', submitCategoryForm);
+	            }
+
+	            const tbody = document.getElementById('category-table-body');
+	            if (tbody) {
+	                tbody.addEventListener('click', handleCategoryTableClick);
+	            }
+
+	            loadCategories(1);
+	        });
+	    </script>
+	</body>
+	</html>

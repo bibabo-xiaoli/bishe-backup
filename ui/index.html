@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能回收小程序设计</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        green: {
+                            50: '#F7FAEF', // Ultra light version of D1E0AB
+                            100: '#D1E0AB', // User provided Light
+                            200: '#B6D18C',
+                            300: '#9AC26D',
+                            400: '#8AB261',
+                            500: '#79A26A', // User provided Primary
+                            600: '#3F7745', // User provided Mid
+                            700: '#39561F', // User provided Dark
+                            800: '#2E4519',
+                            900: '#233413',
+                            950: '#121C0A',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* 隐藏滚动条但保留滚动功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            background-color: #39561F; /* Dark Green 2 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 12px solid #1f2937;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f8fafc;
+            flex-shrink: 0;
+        }
+        .capsule {
+            width: 87px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-10 gap-10 flex-wrap overflow-x-auto">
+
+    <!-- Page 1: 首页 / Home -->
+    <div class="phone-frame flex flex-col">
+        <!-- Top Bar (Capsule) -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="text-lg font-bold text-gray-800 ml-2 pointer-events-auto">绿色回收</div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-[100px] pb-[80px]">
+            
+            <!-- Hero Banner -->
+            <div class="px-4 mb-6">
+                <div class="w-full h-40 rounded-2xl overflow-hidden relative shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Green Recycling" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 to-transparent flex flex-col justify-center px-6">
+                        <h2 class="text-white text-2xl font-bold mb-2">行为激励驱动</h2>
+                        <p class="text-green-100 text-sm">让环保成为一种生活方式</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats/Points Card -->
+            <div class="px-4 mb-6">
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-xs mb-1">当前积分</p>
+                        <h3 class="text-3xl font-bold text-green-600">1,280</h3>
+                    </div>
+                    <button class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md shadow-green-200 hover:bg-green-600 transition">
+                        兑换商城
+                    </button>
+                </div>
+            </div>
+
+            <!-- Core Features Grid -->
+            <div class="px-4 mb-8">
+                <h3 class="text-gray-800 font-bold mb-4 text-lg">核心功能</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Intelligent Identification -->
+                    <div class="bg-blue-50 p-4 rounded-2xl flex flex-col items-center justify-center h-32 cursor-pointer hover:bg-blue-100 transition border border-blue-100 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-200 rounded-full opacity-50 group-hover:scale-110 transition"></div>
+                        <i class="ph ph-camera text-3xl text-blue-500 mb-2 z-10"></i>
+                        <span class="font-bold text-gray-700 z-10">智能识别</span>
+                        <span class="text-xs text-gray-500 mt-1 z-10">拍照自动分类</span>
+                    </div>
+                    
+                    <!-- Recycling Appointment -->
+                    <div class="bg-green-50 p-4 rounded-2xl flex flex-col items-center justify-center h-32 cursor-pointer hover:bg-green-100 transition border border-green-100 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-200 rounded-full opacity-50 group-hover:scale-110 transition"></div>
+                        <i class="ph ph-truck text-3xl text-green-500 mb-2 z-10"></i>
+                        <span class="font-bold text-gray-700 z-10">预约回收</span>
+                        <span class="text-xs text-gray-500 mt-1 z-10">上门服务</span>
+                    </div>
+
+                    <!-- Nearby Stations -->
+                    <div class="bg-orange-50 p-4 rounded-2xl flex flex-col items-center justify-center h-32 cursor-pointer hover:bg-orange-100 transition border border-orange-100 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-orange-200 rounded-full opacity-50 group-hover:scale-110 transition"></div>
+                        <i class="ph ph-map-pin text-3xl text-orange-500 mb-2 z-10"></i>
+                        <span class="font-bold text-gray-700 z-10">附近网点</span>
+                        <span class="text-xs text-gray-500 mt-1 z-10">查找投放点</span>
+                    </div>
+
+                    <!-- Recycling Guide -->
+                    <div class="bg-purple-50 p-4 rounded-2xl flex flex-col items-center justify-center h-32 cursor-pointer hover:bg-purple-100 transition border border-purple-100 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-purple-200 rounded-full opacity-50 group-hover:scale-110 transition"></div>
+                        <i class="ph ph-book-open text-3xl text-purple-500 mb-2 z-10"></i>
+                        <span class="font-bold text-gray-700 z-10">分类指南</span>
+                        <span class="text-xs text-gray-500 mt-1 z-10">知识库</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="px-4">
+                <h3 class="text-gray-800 font-bold mb-4 text-lg">最近动态</h3>
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <i class="ph ph-leaf text-green-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-gray-800">完成一次塑料瓶回收</h4>
+                            <p class="text-xs text-gray-500">2023-10-24 14:30</p>
+                        </div>
+                        <span class="text-green-600 font-bold text-sm">+50积分</span>
+                    </div>
+                    <div class="w-full h-[1px] bg-gray-50"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <i class="ph ph-scan text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-gray-800">识别成功：旧报纸</h4>
+                            <p class="text-xs text-gray-500">2023-10-23 09:15</p>
+                        </div>
+                        <span class="text-gray-400 text-xs">查看详情</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="absolute bottom-0 left-0 w-full h-[83px] bg-white border-t border-gray-100 flex justify-around items-start pt-4 pb-8 z-50">
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph-fill ph-house text-2xl text-green-600"></i>
+                <span class="text-[10px] font-medium text-green-600">首页</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-trophy text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">排行榜</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-users text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">社区</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-user text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">我的</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: 智能识别 / Intelligent Identification -->
+    <div class="phone-frame flex flex-col relative bg-black">
+        <!-- Top Bar (Capsule) -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="w-8 h-8 rounded-full bg-black/20 backdrop-blur flex items-center justify-center pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-white text-lg"></i>
+            </div>
+            <div class="capsule pointer-events-auto bg-white/20 border-white/10">
+                <i class="ph ph-dots-three text-lg text-white"></i>
+                <div class="w-[1px] h-4 bg-white/30"></div>
+                <i class="ph ph-target text-lg text-white"></i>
+            </div>
+        </div>
+
+        <!-- Camera Viewfinder Simulation -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Plastic Bottle" class="w-full h-full object-cover opacity-80">
+            
+            <!-- Scanning Overlay -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div class="w-64 h-64 border-2 border-green-400 rounded-2xl relative">
+                    <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-green-500 -mt-1 -ml-1 rounded-tl"></div>
+                    <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-green-500 -mt-1 -mr-1 rounded-tr"></div>
+                    <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-green-500 -mb-1 -ml-1 rounded-bl"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-green-500 -mb-1 -mr-1 rounded-br"></div>
+                    
+                    <!-- Scan Line Animation -->
+                    <div class="absolute left-0 right-0 h-0.5 bg-green-500/80 shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-[scan_2s_infinite]"></div>
+                </div>
+                <p class="text-white mt-4 font-medium bg-black/40 px-3 py-1 rounded-full text-sm backdrop-blur">对准物品自动识别</p>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="absolute bottom-0 w-full p-8 pb-12 z-20 flex justify-between items-center bg-gradient-to-t from-black/80 to-transparent">
+            <div class="flex flex-col items-center gap-2 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
+                    <i class="ph ph-image text-white text-xl"></i>
+                </div>
+                <span class="text-white text-xs">相册</span>
+            </div>
+            
+            <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center cursor-pointer">
+                <div class="w-16 h-16 bg-white rounded-full"></div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
+                    <i class="ph ph-lightning text-white text-xl"></i>
+                </div>
+                <span class="text-white text-xs">开灯</span>
+            </div>
+        </div>
+
+        <!-- Recognition Result Pop-up (Simulated) -->
+        <div class="absolute bottom-32 left-4 right-4 bg-white rounded-2xl p-4 shadow-2xl animate-[slideUp_0.5s_ease-out]">
+            <div class="flex items-start gap-3">
+                <div class="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-lg text-gray-800">PET 塑料瓶</h3>
+                        <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">可回收物</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">预估积分：<span class="text-green-600 font-bold">10</span></p>
+                    <p class="text-gray-400 text-xs mt-1">请倒空液体，压扁投放</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+                <button class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">报错</button>
+                <button class="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-medium">确认投放</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: 预约回收 / Appointment -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">预约回收</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-[100px] px-4 pb-8">
+            <!-- Progress Steps -->
+            <div class="flex justify-between items-center mb-8 px-2">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">1</div>
+                    <span class="text-xs text-green-600 mt-1 font-medium">选择物品</span>
+                </div>
+                <div class="h-[2px] flex-1 bg-green-200 mx-2"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold">2</div>
+                    <span class="text-xs text-gray-400 mt-1">预约时间</span>
+                </div>
+                <div class="h-[2px] flex-1 bg-gray-100 mx-2"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-sm font-bold">3</div>
+                    <span class="text-xs text-gray-400 mt-1">确认订单</span>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="space-y-6">
+                <!-- Category Selection -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3">回收品类</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="border-2 border-green-500 bg-green-50 rounded-xl p-3 flex flex-col items-center cursor-pointer relative">
+                            <div class="absolute top-2 right-2 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="ph ph-check text-white text-xs"></i>
+                            </div>
+                            <i class="ph ph-package text-2xl text-green-600 mb-2"></i>
+                            <span class="text-sm font-medium text-green-700">纸板箱</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:border-green-200">
+                            <i class="ph ph-t-shirt text-2xl text-gray-500 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-600">旧衣物</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:border-green-200">
+                            <i class="ph ph-monitor text-2xl text-gray-500 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-600">家电</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:border-green-200">
+                            <i class="ph ph-book text-2xl text-gray-500 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-600">书籍</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:border-green-200">
+                            <i class="ph ph-beer-bottle text-2xl text-gray-500 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-600">塑料瓶</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:border-green-200">
+                            <i class="ph ph-squares-four text-2xl text-gray-500 mb-2"></i>
+                            <span class="text-sm font-medium text-gray-600">其他</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weight Estimation -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3">预估重量</h3>
+                    <div class="bg-gray-50 p-4 rounded-xl flex items-center justify-between">
+                        <button class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100">
+                            <i class="ph ph-minus"></i>
+                        </button>
+                        <div class="text-center">
+                            <span class="text-2xl font-bold text-gray-800">5-10</span>
+                            <span class="text-sm text-gray-500">kg</span>
+                        </div>
+                        <button class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100">
+                            <i class="ph ph-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3">上门地址</h3>
+                    <div class="bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                            <i class="ph ph-map-pin text-orange-500"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-gray-800">家</span>
+                                <span class="text-xs text-gray-500">张三 138****0000</span>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-1">北京市朝阳区阳光100国际公寓A座1202</p>
+                        </div>
+                        <i class="ph ph-caret-right text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Upload Photos -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3">物品照片 (可选)</h3>
+                    <div class="flex gap-3">
+                        <div class="w-24 h-24 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-green-400 hover:text-green-500 transition">
+                            <i class="ph ph-camera text-2xl mb-1"></i>
+                            <span class="text-xs">添加照片</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 pb-8 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            <div class="flex items-center gap-4">
+                <div class="flex-1">
+                    <span class="text-sm text-gray-500">预估积分</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-2xl font-bold text-green-600">150</span>
+                        <span class="text-xs text-green-600">分</span>
+                    </div>
+                </div>
+                <button class="bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-green-200 hover:bg-green-600 transition flex items-center gap-2">
+                    立即预约
+                    <i class="ph ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 4: 附近网点 / Nearby Stations -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">附近网点</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Map Area -->
+            <div class="h-[50%] bg-gray-100 relative w-full">
+                <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Map" class="w-full h-full object-cover grayscale opacity-50">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-green-500 border-4 border-white shadow-lg flex items-center justify-center">
+                    <i class="ph-fill ph-house text-white text-xs"></i>
+                </div>
+                <!-- Pins -->
+                <div class="absolute top-[30%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group">
+                    <div class="w-10 h-10 bg-white rounded-full p-1 shadow-lg flex items-center justify-center relative">
+                        <div class="w-full h-full bg-orange-500 rounded-full flex items-center justify-center text-white">
+                            <i class="ph ph-recycle"></i>
+                        </div>
+                        <div class="absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white rotate-45"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Area -->
+            <div class="h-[50%] bg-white rounded-t-3xl -mt-6 relative z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] flex flex-col">
+                <div class="p-4 pb-2 flex justify-center">
+                    <div class="w-12 h-1 bg-gray-200 rounded-full"></div>
+                </div>
+                <div class="px-6 pb-2">
+                    <h3 class="font-bold text-lg text-gray-800">附近回收点 (3)</h3>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto no-scrollbar px-4 pb-8 space-y-4">
+                    <!-- Station 1 -->
+                    <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                            <i class="ph ph-recycle text-3xl text-orange-500"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800">阳光小区智能回收柜</h4>
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-1">北京市朝阳区阳光100国际公寓北门</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">运行中</span>
+                                <span class="text-xs text-gray-400">距离 150m</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center gap-1">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="ph-fill ph-navigation-arrow text-sm"></i>
+                            </div>
+                            <span class="text-[10px] text-gray-500">导航</span>
+                        </div>
+                    </div>
+
+                     <!-- Station 2 -->
+                     <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <i class="ph ph-storefront text-3xl text-green-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800">绿色生活服务站</h4>
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-1">北京市朝阳区光华路SOHO 1层</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">营业中</span>
+                                <span class="text-xs text-gray-400">距离 480m</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center gap-1">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="ph-fill ph-navigation-arrow text-sm"></i>
+                            </div>
+                            <span class="text-[10px] text-gray-500">导航</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 5: 分类指南 / Classification Guide -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">分类指南</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-[100px] px-4 pb-8">
+            <!-- Search -->
+            <div class="relative mb-6">
+                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                <input type="text" placeholder="输入物品名称查询分类..." class="w-full bg-gray-100 rounded-full py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+
+            <!-- Main Categories -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-blue-600 rounded-2xl p-4 text-white relative overflow-hidden h-32 flex flex-col justify-between shadow-lg shadow-blue-200">
+                    <i class="ph ph-recycle text-6xl absolute -right-2 -bottom-4 opacity-20"></i>
+                    <h3 class="font-bold text-lg">可回收物</h3>
+                    <p class="text-xs text-blue-100 opacity-90">适宜回收、可循环利用的生活废弃物</p>
+                </div>
+                <div class="bg-red-500 rounded-2xl p-4 text-white relative overflow-hidden h-32 flex flex-col justify-between shadow-lg shadow-red-200">
+                    <i class="ph ph-warning-octagon text-6xl absolute -right-2 -bottom-4 opacity-20"></i>
+                    <h3 class="font-bold text-lg">有害垃圾</h3>
+                    <p class="text-xs text-red-100 opacity-90">对人体健康或自然环境造成直接或潜在危害</p>
+                </div>
+                <div class="bg-green-600 rounded-2xl p-4 text-white relative overflow-hidden h-32 flex flex-col justify-between shadow-lg shadow-green-200">
+                    <i class="ph ph-fish text-6xl absolute -right-2 -bottom-4 opacity-20"></i>
+                    <h3 class="font-bold text-lg">厨余垃圾</h3>
+                    <p class="text-xs text-green-100 opacity-90">易腐烂的、含有机质的生活废弃物</p>
+                </div>
+                <div class="bg-gray-700 rounded-2xl p-4 text-white relative overflow-hidden h-32 flex flex-col justify-between shadow-lg shadow-gray-400">
+                    <i class="ph ph-trash text-6xl absolute -right-2 -bottom-4 opacity-20"></i>
+                    <h3 class="font-bold text-lg">其他垃圾</h3>
+                    <p class="text-xs text-gray-300 opacity-90">除上述类别之外的生活废弃物</p>
+                </div>
+            </div>
+
+            <!-- Common Queries -->
+            <div class="mb-4">
+                <h3 class="font-bold text-gray-800 mb-3 text-lg">常见查询</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="ph ph-coffee text-gray-500"></i>
+                            </div>
+                            <span class="text-gray-700">一次性咖啡杯</span>
+                        </div>
+                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">其他垃圾</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="ph ph-battery-warning text-red-500"></i>
+                            </div>
+                            <span class="text-gray-700">废旧电池</span>
+                        </div>
+                        <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">有害垃圾</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="ph ph-carrot text-green-600"></i>
+                            </div>
+                            <span class="text-gray-700">果皮菜叶</span>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">厨余垃圾</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 6: 积分商城 / Mall -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">积分商城</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="pt-[100px] px-4 pb-4 bg-white rounded-b-3xl shadow-sm">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <p class="text-gray-500 text-xs mb-1">可用积分</p>
+                    <h2 class="text-3xl font-bold text-green-600">1,280</h2>
+                </div>
+                <button class="text-xs text-gray-500 flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
+                    兑换记录 <i class="ph ph-caret-right"></i>
+                </button>
+            </div>
+            <!-- Mall Categories -->
+            <div class="flex justify-between px-2">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+                        <i class="ph ph-gift text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">生活用品</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
+                        <i class="ph ph-ticket text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">优惠券</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-500">
+                        <i class="ph ph-heart text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">公益捐赠</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500">
+                        <i class="ph ph-star text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">抽奖</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4">
+            <h3 class="font-bold text-gray-800 mb-4">热门兑换</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="h-32 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1599950753725-cb5f804543a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col">
+                        <h4 class="text-sm font-bold text-gray-800 line-clamp-2">环保帆布袋 大容量购物袋</h4>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <span class="text-green-600 font-bold text-sm">500 <span class="text-xs font-normal">分</span></span>
+                            <button class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">兑换</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="h-32 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1621251923067-15c0d54f5904?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col">
+                        <h4 class="text-sm font-bold text-gray-800 line-clamp-2">再生纸笔记本 文艺复古</h4>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <span class="text-green-600 font-bold text-sm">300 <span class="text-xs font-normal">分</span></span>
+                            <button class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">兑换</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="h-32 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1610452330752-6a7350711db1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col">
+                        <h4 class="text-sm font-bold text-gray-800 line-clamp-2">竹纤维家用纸巾 (3包)</h4>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <span class="text-green-600 font-bold text-sm">150 <span class="text-xs font-normal">分</span></span>
+                            <button class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">兑换</button>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Product 4 -->
+                 <div class="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="h-32 bg-gray-200 flex items-center justify-center bg-green-50">
+                        <i class="ph ph-tree text-green-500 text-5xl"></i>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col">
+                        <h4 class="text-sm font-bold text-gray-800 line-clamp-2">种一棵树 (阿拉善公益)</h4>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <span class="text-green-600 font-bold text-sm">2000 <span class="text-xs font-normal">分</span></span>
+                            <button class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">捐赠</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 7: 立即预约成功 / Success -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-x text-black text-xl"></i>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-[bounce_1s_infinite]">
+                <i class="ph-fill ph-check-circle text-6xl text-green-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">预约成功！</h2>
+            <p class="text-gray-500 mb-8">回收员将在预约时间段内上门，请保持电话畅通。</p>
+
+            <div class="w-full bg-gray-50 rounded-xl p-4 mb-8 text-left">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-500 text-sm">预约时间</span>
+                    <span class="text-gray-800 font-medium text-sm">明天 09:00 - 11:00</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-500 text-sm">回收品类</span>
+                    <span class="text-gray-800 font-medium text-sm">纸板箱, 旧衣物</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 text-sm">预估积分</span>
+                    <span class="text-green-600 font-bold text-sm">150 分</span>
+                </div>
+            </div>
+
+            <div class="w-full space-y-3">
+                <button class="w-full bg-green-500 text-white py-3 rounded-full font-bold shadow-lg shadow-green-200">查看订单详情</button>
+                <button class="w-full bg-white text-gray-500 py-3 rounded-full font-medium border border-gray-200">返回首页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 8: 我的 / My Page -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-end items-center pointer-events-none">
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- User Header -->
+        <div class="bg-white pt-[100px] pb-6 px-6 rounded-b-3xl shadow-sm">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden border-2 border-green-500">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">环保小卫士</h2>
+                    <div class="flex items-center gap-1 mt-1">
+                        <i class="ph-fill ph-medal text-yellow-500"></i>
+                        <span class="text-xs text-gray-500">Lv.3 绿色达人</span>
+                    </div>
+                </div>
+                <i class="ph ph-gear text-2xl text-gray-400 ml-auto cursor-pointer"></i>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex gap-4">
+                <div class="flex-1 bg-green-50 rounded-xl p-3 flex flex-col items-center">
+                    <span class="text-xs text-gray-500 mb-1">累计减碳</span>
+                    <span class="text-lg font-bold text-green-700">23.5 <span class="text-xs font-normal">kg</span></span>
+                </div>
+                <div class="flex-1 bg-blue-50 rounded-xl p-3 flex flex-col items-center">
+                    <span class="text-xs text-gray-500 mb-1">回收次数</span>
+                    <span class="text-lg font-bold text-blue-700">12 <span class="text-xs font-normal">次</span></span>
+                </div>
+                <div class="flex-1 bg-orange-50 rounded-xl p-3 flex flex-col items-center">
+                    <span class="text-xs text-gray-500 mb-1">当前积分</span>
+                    <span class="text-lg font-bold text-orange-700">1,280</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3">
+            <!-- Order Management -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800">我的订单</h3>
+                    <span class="text-xs text-gray-400 flex items-center gap-1">全部 <i class="ph ph-caret-right"></i></span>
+                </div>
+                <div class="flex justify-around">
+                    <div class="flex flex-col items-center gap-2 cursor-pointer">
+                        <i class="ph ph-clock text-2xl text-gray-600"></i>
+                        <span class="text-xs text-gray-600">待上门</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer">
+                        <i class="ph ph-package text-2xl text-gray-600"></i>
+                        <span class="text-xs text-gray-600">进行中</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer">
+                        <i class="ph ph-check-circle text-2xl text-gray-600"></i>
+                        <span class="text-xs text-gray-600">已完成</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer">
+                        <i class="ph ph-arrow-u-up-left text-2xl text-gray-600"></i>
+                        <span class="text-xs text-gray-600">售后</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Menu Items -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-map-pin text-xl text-green-600"></i>
+                        <span class="text-gray-700 font-medium">地址管理</span>
+                    </div>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-users text-xl text-blue-500"></i>
+                        <span class="text-gray-700 font-medium">邀请好友</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-orange-500">得500积分</span>
+                        <i class="ph ph-caret-right text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-headset text-xl text-gray-600"></i>
+                        <span class="text-gray-700 font-medium">联系客服</span>
+                    </div>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="absolute bottom-0 left-0 w-full h-[83px] bg-white border-t border-gray-100 flex justify-around items-start pt-4 pb-8 z-50">
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-house text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">首页</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-trophy text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">排行榜</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph ph-users text-2xl text-gray-400"></i>
+                <span class="text-[10px] font-medium text-gray-400">社区</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 cursor-pointer">
+                <i class="ph-fill ph-user text-2xl text-green-600"></i>
+                <span class="text-[10px] font-medium text-green-600">我的</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 9: 待上门 / Pending Orders -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2 shadow-sm">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">我的订单</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white mt-[100px] px-2 flex justify-around border-b border-gray-100">
+            <div class="py-3 px-2 border-b-2 border-green-500 text-green-600 font-bold text-sm">待上门</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">进行中</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">已完成</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">售后</div>
+        </div>
+
+        <!-- List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">订单号: 20231024001</span>
+                    <span class="text-xs text-orange-500 font-medium">等待上门</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-package text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">纸板箱, 旧衣物</h4>
+                        <p class="text-xs text-gray-500 mt-1">预估重量: 5-10kg</p>
+                        <p class="text-xs text-gray-500 mt-1">预约时间: 明天 09:00-11:00</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">修改时间</button>
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">取消订单</button>
+                </div>
+            </div>
+
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">订单号: 20231025008</span>
+                    <span class="text-xs text-orange-500 font-medium">等待上门</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-monitor text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">废旧家电 (微波炉)</h4>
+                        <p class="text-xs text-gray-500 mt-1">预估重量: <5kg</p>
+                        <p class="text-xs text-gray-500 mt-1">预约时间: 后天 14:00-16:00</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">修改时间</button>
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">取消订单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 10: 进行中 / Processing Orders -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2 shadow-sm">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">我的订单</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white mt-[100px] px-2 flex justify-around border-b border-gray-100">
+            <div class="py-3 px-2 text-gray-500 text-sm">待上门</div>
+            <div class="py-3 px-2 border-b-2 border-green-500 text-green-600 font-bold text-sm">进行中</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">已完成</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">售后</div>
+        </div>
+
+        <!-- List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-green-100">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">订单号: 20231024099</span>
+                    <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="ph-fill ph-truck"></i> 回收员已出发</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-book text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">旧书籍, 报刊</h4>
+                        <p class="text-xs text-gray-500 mt-1">回收员: 李师傅 139****8888</p>
+                        <p class="text-xs text-gray-500 mt-1">预计到达: 15分钟后</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 bg-green-500 text-white rounded-full text-xs shadow-sm">联系回收员</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 11: 已完成 / Completed Orders -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2 shadow-sm">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">我的订单</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white mt-[100px] px-2 flex justify-around border-b border-gray-100">
+            <div class="py-3 px-2 text-gray-500 text-sm">待上门</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">进行中</div>
+            <div class="py-3 px-2 border-b-2 border-green-500 text-green-600 font-bold text-sm">已完成</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">售后</div>
+        </div>
+
+        <!-- List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">2023-10-20 15:30</span>
+                    <span class="text-xs text-gray-400">已完成</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-beer-bottle text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">塑料瓶, 易拉罐</h4>
+                        <p class="text-xs text-gray-500 mt-1">实测重量: 3.5kg</p>
+                        <p class="text-xs text-green-600 font-bold mt-1">+85 积分</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">删除订单</button>
+                    <button class="px-3 py-1.5 border border-green-500 text-green-600 rounded-full text-xs">再来一单</button>
+                </div>
+            </div>
+
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">2023-10-15 10:00</span>
+                    <span class="text-xs text-gray-400">已完成</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-t-shirt text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">旧衣物</h4>
+                        <p class="text-xs text-gray-500 mt-1">实测重量: 12.0kg</p>
+                        <p class="text-xs text-green-600 font-bold mt-1">+240 积分</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">删除订单</button>
+                    <button class="px-3 py-1.5 border border-green-500 text-green-600 rounded-full text-xs">再来一单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 12: 售后 / After-sales -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2 shadow-sm">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">我的订单</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white mt-[100px] px-2 flex justify-around border-b border-gray-100">
+            <div class="py-3 px-2 text-gray-500 text-sm">待上门</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">进行中</div>
+            <div class="py-3 px-2 text-gray-500 text-sm">已完成</div>
+            <div class="py-3 px-2 border-b-2 border-green-500 text-green-600 font-bold text-sm">售后</div>
+        </div>
+
+        <!-- List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+            <!-- Order Item -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-50">
+                    <span class="text-xs text-gray-500">2023-10-10 14:20</span>
+                    <span class="text-xs text-red-500 font-medium">处理中</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ph ph-package text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">混合回收物</h4>
+                        <p class="text-xs text-gray-500 mt-1">问题反馈: 积分计算有误</p>
+                        <p class="text-xs text-gray-400 mt-1">客服正在核实中...</p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">查看进度</button>
+                    <button class="px-3 py-1.5 border border-gray-200 rounded-full text-xs text-gray-600">联系客服</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 13: 设置 / Settings -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2 shadow-sm">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">设置</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-[100px] p-4 space-y-4">
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">个人信息</span>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">账号安全</span>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+                 <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">隐私设置</span>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">消息通知</span>
+                    <div class="w-10 h-6 bg-green-500 rounded-full relative">
+                        <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">清除缓存</span>
+                    <span class="text-xs text-gray-400">12.5MB</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center justify-between p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">关于我们</span>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                    <span class="text-gray-700">用户协议</span>
+                    <i class="ph ph-caret-right text-gray-400"></i>
+                </div>
+            </div>
+
+            <button class="w-full bg-white text-red-500 py-3 rounded-xl font-medium shadow-sm hover:bg-red-50 transition mt-4">退出登录</button>
+            <p class="text-center text-xs text-gray-400 mt-4">当前版本 v1.0.0</p>
+        </div>
+    </div>
+
+    <!-- Page 14: 可回收物详情 / Recyclable Details -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-white text-xl"></i>
+                <span class="text-lg font-bold text-white">可回收物</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="bg-blue-600 h-[200px] relative flex items-center justify-center -mt-[44px] pt-[44px]">
+             <i class="ph ph-recycle text-white text-8xl opacity-20 absolute"></i>
+             <div class="text-center z-10 text-white">
+                 <h1 class="text-3xl font-bold mb-2">可回收物</h1>
+                 <p class="text-blue-100 text-sm">Recyclable Waste</p>
+             </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 -mt-6 bg-white rounded-t-3xl relative z-10">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-2 border-l-4 border-blue-500 pl-2">投放要求</h3>
+                <ul class="list-disc list-inside text-sm text-gray-600 space-y-2 bg-blue-50 p-4 rounded-xl">
+                    <li>轻投轻放</li>
+                    <li>清洁干燥，避免污染</li>
+                    <li>废纸尽量平整</li>
+                    <li>立体包装物请清空内容物，清洁后压扁投放</li>
+                    <li>有尖锐边角的，应包裹后投放</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-4 border-l-4 border-blue-500 pl-2">主要包括</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-newspaper text-2xl text-blue-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废纸张</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-package text-2xl text-blue-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废塑料</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-beer-bottle text-2xl text-blue-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废玻璃制品</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-wrench text-2xl text-blue-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废金属</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-t-shirt text-2xl text-blue-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废织物</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 15: 有害垃圾详情 / Hazardous Details -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-white text-xl"></i>
+                <span class="text-lg font-bold text-white">有害垃圾</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="bg-red-500 h-[200px] relative flex items-center justify-center -mt-[44px] pt-[44px]">
+             <i class="ph ph-warning-octagon text-white text-8xl opacity-20 absolute"></i>
+             <div class="text-center z-10 text-white">
+                 <h1 class="text-3xl font-bold mb-2">有害垃圾</h1>
+                 <p class="text-red-100 text-sm">Hazardous Waste</p>
+             </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 -mt-6 bg-white rounded-t-3xl relative z-10">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-2 border-l-4 border-red-500 pl-2">投放要求</h3>
+                <ul class="list-disc list-inside text-sm text-gray-600 space-y-2 bg-red-50 p-4 rounded-xl">
+                    <li>投放时请注意轻放</li>
+                    <li>易破损的请连带包装或包裹后投放</li>
+                    <li>如易挥发，请密封后投放</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-4 border-l-4 border-red-500 pl-2">主要包括</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-battery-warning text-2xl text-red-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废电池</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-lightbulb text-2xl text-red-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废灯管</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-pill text-2xl text-red-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废药品</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-paint-bucket text-2xl text-red-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">废油漆</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 16: 厨余垃圾详情 / Kitchen Details -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-white text-xl"></i>
+                <span class="text-lg font-bold text-white">厨余垃圾</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="bg-green-600 h-[200px] relative flex items-center justify-center -mt-[44px] pt-[44px]">
+             <i class="ph ph-fish text-white text-8xl opacity-20 absolute"></i>
+             <div class="text-center z-10 text-white">
+                 <h1 class="text-3xl font-bold mb-2">厨余垃圾</h1>
+                 <p class="text-green-100 text-sm">Food Waste</p>
+             </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 -mt-6 bg-white rounded-t-3xl relative z-10">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-2 border-l-4 border-green-500 pl-2">投放要求</h3>
+                <ul class="list-disc list-inside text-sm text-gray-600 space-y-2 bg-green-50 p-4 rounded-xl">
+                    <li>厨余垃圾应沥干水分后再投放</li>
+                    <li>有包装物的应将包装物去除后分类投放</li>
+                    <li>包装物应投放到对应的可回收物或其他垃圾容器中</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-4 border-l-4 border-green-500 pl-2">主要包括</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-carrot text-2xl text-green-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">蔬菜瓜果</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-bone text-2xl text-green-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">骨骼内脏</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-bowl-food text-2xl text-green-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">剩菜剩饭</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 17: 其他垃圾详情 / Other Details -->
+    <div class="phone-frame flex flex-col bg-white">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center pointer-events-none">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-white text-xl"></i>
+                <span class="text-lg font-bold text-white">其他垃圾</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <div class="bg-gray-600 h-[200px] relative flex items-center justify-center -mt-[44px] pt-[44px]">
+             <i class="ph ph-trash text-white text-8xl opacity-20 absolute"></i>
+             <div class="text-center z-10 text-white">
+                 <h1 class="text-3xl font-bold mb-2">其他垃圾</h1>
+                 <p class="text-gray-200 text-sm">Residual Waste</p>
+             </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 -mt-6 bg-white rounded-t-3xl relative z-10">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-2 border-l-4 border-gray-500 pl-2">投放要求</h3>
+                <ul class="list-disc list-inside text-sm text-gray-600 space-y-2 bg-gray-50 p-4 rounded-xl">
+                    <li>尽量沥干水分</li>
+                    <li>难以辨识类别的生活垃圾投入其他垃圾容器内</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-4 border-l-4 border-gray-500 pl-2">主要包括</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-toilet-paper text-2xl text-gray-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">卫生纸巾</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-egg-crack text-2xl text-gray-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">碎陶瓷</span>
+                    </div>
+                     <div class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="ph ph-cigarette text-2xl text-gray-500"></i>
+                        </div>
+                        <span class="text-xs text-gray-600">烟蒂</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 18: 排行榜 / Leaderboard -->
+    <div class="phone-frame flex flex-col bg-green-50">
+        <!-- Top Header Area -->
+        <div class="bg-green-600 pb-12 rounded-b-[40px] relative">
+            <!-- Top Bar -->
+            <div class="pt-[44px] px-4 flex justify-between items-center text-white mb-4">
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <i class="ph ph-caret-left text-xl"></i>
+                    <span class="text-lg font-bold">环保排行榜</span>
+                </div>
+                <div class="capsule bg-white/20 border-white/10">
+                    <i class="ph ph-dots-three text-lg text-white"></i>
+                    <div class="w-[1px] h-4 bg-white/30"></div>
+                    <i class="ph ph-target text-lg text-white"></i>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-black/10 p-1 rounded-full flex">
+                    <button class="px-4 py-1 rounded-full bg-white text-green-600 text-xs font-bold shadow-sm">周榜</button>
+                    <button class="px-4 py-1 rounded-full text-green-100 text-xs font-medium">月榜</button>
+                    <button class="px-4 py-1 rounded-full text-green-100 text-xs font-medium">总榜</button>
+                </div>
+            </div>
+
+            <!-- Podium -->
+            <div class="flex justify-center items-end gap-4 px-4 relative z-10">
+                <!-- 2nd Place -->
+                <div class="flex flex-col items-center">
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-full border-2 border-white/50 p-0.5">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center border-2 border-green-600 text-xs font-bold text-gray-600">2</div>
+                    </div>
+                    <span class="text-white text-xs mt-2 font-medium">李四</span>
+                    <span class="text-green-100 text-xs">2180分</span>
+                </div>
+                
+                <!-- 1st Place -->
+                <div class="flex flex-col items-center -mb-4">
+                    <div class="relative">
+                        <i class="ph-fill ph-crown text-yellow-300 text-2xl absolute -top-5 left-1/2 transform -translate-x-1/2"></i>
+                        <div class="w-20 h-20 rounded-full border-4 border-yellow-300 p-0.5">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-green-600 text-xs font-bold text-white shadow-sm">1</div>
+                    </div>
+                    <span class="text-white text-sm mt-3 font-bold">环保小卫士</span>
+                    <span class="text-yellow-200 text-xs font-bold">2850分</span>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="flex flex-col items-center">
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-full border-2 border-white/50 p-0.5">
+                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-orange-200 rounded-full flex items-center justify-center border-2 border-green-600 text-xs font-bold text-orange-700">3</div>
+                    </div>
+                    <span class="text-white text-xs mt-2 font-medium">王五</span>
+                    <span class="text-green-100 text-xs">1950分</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ranking List -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-6 px-4 pb-20 -mt-4">
+            <div class="bg-white rounded-2xl p-2 shadow-sm space-y-1">
+                <!-- Rank 4 -->
+                <div class="flex items-center p-3 hover:bg-gray-50 rounded-xl">
+                    <span class="w-8 text-center text-gray-500 font-bold text-sm">4</span>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mx-3 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">赵六</h4>
+                        <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">减碳达人</span>
+                    </div>
+                    <span class="text-green-600 font-bold text-sm">1800</span>
+                </div>
+                <!-- Rank 5 -->
+                <div class="flex items-center p-3 hover:bg-gray-50 rounded-xl">
+                    <span class="w-8 text-center text-gray-500 font-bold text-sm">5</span>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mx-3 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">钱七</h4>
+                    </div>
+                    <span class="text-green-600 font-bold text-sm">1650</span>
+                </div>
+                <!-- Rank 6 -->
+                <div class="flex items-center p-3 hover:bg-gray-50 rounded-xl">
+                    <span class="w-8 text-center text-gray-500 font-bold text-sm">6</span>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mx-3 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">孙八</h4>
+                    </div>
+                    <span class="text-green-600 font-bold text-sm">1520</span>
+                </div>
+                <!-- Rank 7 -->
+                <div class="flex items-center p-3 hover:bg-gray-50 rounded-xl">
+                    <span class="w-8 text-center text-gray-500 font-bold text-sm">7</span>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mx-3 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">周九</h4>
+                    </div>
+                    <span class="text-green-600 font-bold text-sm">1400</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Rank Fixed Bottom -->
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-20">
+             <div class="flex items-center">
+                <span class="w-8 text-center text-gray-800 font-bold text-lg">15</span>
+                <div class="w-10 h-10 rounded-full bg-gray-200 mx-3 overflow-hidden border border-gray-100">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-gray-800">我</h4>
+                    <span class="text-xs text-gray-500">距离上一名还差 50 分</span>
+                </div>
+                <span class="text-green-600 font-bold text-lg">1,280</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 19: 绿色社区 / Green Community -->
+    <div class="phone-frame flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 w-full pt-[44px] px-4 z-50 flex justify-between items-center bg-white pb-2">
+            <div class="flex items-center gap-2 pointer-events-auto cursor-pointer">
+                <i class="ph ph-caret-left text-black text-xl"></i>
+                <span class="text-lg font-bold text-gray-800">绿色社区</span>
+            </div>
+            <div class="capsule pointer-events-auto">
+                <i class="ph ph-dots-three text-lg text-black"></i>
+                <div class="w-[1px] h-4 bg-gray-300"></div>
+                <i class="ph ph-target text-lg text-black"></i>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-[100px] px-4 pb-20">
+            <!-- Search & Filter -->
+            <div class="flex gap-3 mb-4">
+                <div class="relative flex-1">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="搜索话题" class="w-full bg-white rounded-full py-2 pl-9 pr-4 text-xs shadow-sm">
+                </div>
+                <button class="bg-green-100 text-green-600 px-3 py-2 rounded-full text-xs font-bold">我的关注</button>
+            </div>
+
+            <!-- Categories/Topics -->
+            <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
+                <div class="flex-shrink-0 bg-green-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-green-200 shadow-md"># 全部推荐</div>
+                <div class="flex-shrink-0 bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium border border-gray-100"># 变废为宝</div>
+                <div class="flex-shrink-0 bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium border border-gray-100"># 垃圾分类疑惑</div>
+                <div class="flex-shrink-0 bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium border border-gray-100"># 环保活动</div>
+            </div>
+
+            <!-- Feed Stream -->
+            <div class="space-y-4">
+                <!-- Post 1: Image Card -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex gap-2 items-center">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-800">环保达人_小美</h4>
+                                <span class="text-[10px] text-gray-400">2小时前</span>
+                            </div>
+                        </div>
+                        <button class="text-green-500 text-xs font-bold border border-green-500 px-2 py-0.5 rounded-full">+ 关注</button>
+                    </div>
+                    <p class="text-sm text-gray-800 mb-2 font-medium">今天把家里的旧快递箱改造成了猫抓板，主子很喜欢！📦➡️🐈 #变废为宝 #DIY</p>
+                    <div class="grid grid-cols-2 gap-2 mb-3 rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1534560706691-1b9a1a47738c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
+                    </div>
+                    <div class="flex justify-between text-gray-400 text-xs px-2">
+                        <span class="flex items-center gap-1 hover:text-red-500 cursor-pointer"><i class="ph ph-heart"></i> 128</span>
+                        <span class="flex items-center gap-1 hover:text-blue-500 cursor-pointer"><i class="ph ph-chat-circle"></i> 45</span>
+                        <span class="flex items-center gap-1 hover:text-green-500 cursor-pointer"><i class="ph ph-share-network"></i> 分享</span>
+                    </div>
+                </div>
+
+                <!-- Post 2: Text Card -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex gap-2 items-center">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-800">新手上路</h4>
+                                <span class="text-[10px] text-gray-400">5小时前</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">求助：这种外卖餐盒属于什么垃圾？</h3>
+                    <p class="text-xs text-gray-600 mb-3 line-clamp-2">吃完的自热火锅盒子，里面有发热包，还有塑料盒，应该怎么分类投放呢？在线等，挺急的！🤔</p>
+                    <div class="bg-gray-50 p-2 rounded-lg mb-3">
+                        <div class="flex gap-2 text-xs">
+                            <span class="text-green-600 font-bold">@绿色回收助手：</span>
+                            <span class="text-gray-600">发热包属于有害垃圾，塑料盒清洗后属于可回收物...</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-gray-400 text-xs px-2">
+                        <span class="flex items-center gap-1 hover:text-red-500 cursor-pointer"><i class="ph ph-heart"></i> 12</span>
+                        <span class="flex items-center gap-1 hover:text-blue-500 cursor-pointer"><i class="ph ph-chat-circle"></i> 8</span>
+                        <span class="flex items-center gap-1 hover:text-green-500 cursor-pointer"><i class="ph ph-share-network"></i> 分享</span>
+                    </div>
+                </div>
+
+                <!-- Post 3: Activity -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-orange-100">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded">官方活动</span>
+                        <span class="text-xs font-bold text-gray-800">周末社区清洁日招募</span>
+                    </div>
+                    <div class="w-full h-24 rounded-xl overflow-hidden relative mb-3">
+                         <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+                         <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                             <button class="bg-orange-500 text-white text-xs px-4 py-1.5 rounded-full font-bold shadow-lg">立即报名</button>
+                         </div>
+                    </div>
+                    <p class="text-xs text-gray-500 flex justify-between">
+                        <span>📅 本周六 09:00</span>
+                        <span>📍 阳光小区中心广场</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <div class="absolute bottom-6 right-6 z-50">
+            <button class="w-14 h-14 bg-green-500 rounded-full shadow-lg shadow-green-300 flex items-center justify-center text-white hover:bg-green-600 transition">
+                <i class="ph ph-pencil-simple text-2xl"></i>
+            </button>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</body>
+</html>

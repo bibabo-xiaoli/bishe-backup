@@ -1,0 +1,103 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">我的订单</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<view class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- Tabs -->
+  <view class="tabs-header">
+    <view class="tab-item {{currentTab === 'pending' ? 'active' : ''}}" bindtap="switchTab" data-tab="pending">待上门</view>
+    <view class="tab-item {{currentTab === 'processing' ? 'active' : ''}}" bindtap="switchTab" data-tab="processing">进行中</view>
+    <view class="tab-item {{currentTab === 'completed' ? 'active' : ''}}" bindtap="switchTab" data-tab="completed">已完成</view>
+    <view class="tab-item {{currentTab === 'aftersale' ? 'active' : ''}}" bindtap="switchTab" data-tab="aftersale">售后</view>
+  </view>
+
+  <!-- List -->
+  <scroll-view scroll-y class="order-list">
+    <view class="content-padding">
+      <block wx:if="{{orders[currentTab] && orders[currentTab].length > 0}}">
+        <block wx:for="{{orders[currentTab]}}" wx:key="id">
+          <view class="order-card {{currentTab === 'processing' ? 'border-green' : ''}}">
+            <view class="card-top border-bottom">
+              <text class="order-id" wx:if="{{currentTab !== 'completed'}}">订单号: {{item.id}}</text>
+              <text class="order-time" wx:else>{{item.time}}</text>
+              
+              <block wx:if="{{currentTab === 'pending'}}">
+                <text class="status-text text-orange">等待上门</text>
+              </block>
+              <block wx:elif="{{currentTab === 'processing'}}">
+                <view class="status-flex text-green">
+                  <image class="icon-truck-xs" src="/image/truck.png"></image>
+                  <text>回收员已出发</text>
+                </view>
+              </block>
+              <block wx:elif="{{currentTab === 'completed'}}">
+                <text class="status-text text-gray">已完成</text>
+              </block>
+              <block wx:elif="{{currentTab === 'aftersale'}}">
+                <text class="status-text text-red">处理中</text>
+              </block>
+            </view>
+
+            <view class="card-content">
+              <view class="icon-box bg-gray-100">
+                <image class="cat-icon" src="{{item.icon}}"></image>
+              </view>
+              <view class="info-box">
+                <text class="item-title">{{item.title}}</text>
+                <block wx:if="{{currentTab === 'pending'}}">
+                  <text class="info-text">预估重量: {{item.weight}}</text>
+                  <text class="info-text">预约时间: {{item.time}}</text>
+                </block>
+                <block wx:elif="{{currentTab === 'processing'}}">
+                  <text class="info-text">回收员: {{item.collector}}</text>
+                  <text class="info-text">预计到达: {{item.eta}}</text>
+                </block>
+                <block wx:elif="{{currentTab === 'completed'}}">
+                  <text class="info-text">实测重量: {{item.realWeight}}</text>
+                  <text class="info-text text-green-bold">+{{item.points}} 积分</text>
+                </block>
+                <block wx:elif="{{currentTab === 'aftersale'}}">
+                  <text class="info-text">问题反馈: {{item.issue}}</text>
+                  <text class="info-text text-gray-light">{{item.status}}</text>
+                </block>
+              </view>
+            </view>
+
+            <view class="card-actions">
+              <block wx:if="{{currentTab === 'pending'}}">
+                <button class="action-btn">修改时间</button>
+                <button class="action-btn">取消订单</button>
+              </block>
+              <block wx:elif="{{currentTab === 'processing'}}">
+                <button class="action-btn bg-green text-white">联系回收员</button>
+              </block>
+              <block wx:elif="{{currentTab === 'completed'}}">
+                <button class="action-btn">删除订单</button>
+                <button class="action-btn border-green text-green">再来一单</button>
+              </block>
+              <block wx:elif="{{currentTab === 'aftersale'}}">
+                <button class="action-btn">查看进度</button>
+                <button class="action-btn">联系客服</button>
+              </block>
+            </view>
+          </view>
+        </block>
+      </block>
+      <block wx:else>
+        <view class="empty-state">
+          <text>暂无订单</text>
+        </view>
+      </block>
+    </view>
+    <view style="height: 40px;"></view>
+  </scroll-view>
+</view>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能回收管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3F7745',
+                        'primary-light': '#79A26A',
+                        'primary-dark': '#39561F',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-item.active { background: linear-gradient(90deg, #3F7745 0%, #79A26A 100%); }
+        .stat-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0">
+            <!-- Logo -->
+            <div class="h-16 flex items-center px-6 border-b border-gray-800">
+                <i class="ph ph-recycle text-2xl text-primary-light mr-2"></i>
+                <span class="font-bold text-lg">智能回收管理系统</span>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <!-- 首页 -->
+                <div class="px-4 mb-2">
+                    <a href="#dashboard" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition">
+                        <i class="ph ph-house text-lg"></i>
+                        <span>控制台</span>
+                    </a>
+                </div>
+
+                <!-- 用户管理 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
+                    <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-users text-lg"></i>
+                        <span>用户列表</span>
+                    </a>
+                    <a href="admin-levels.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-medal text-lg"></i>
+                        <span>等级管理</span>
+                    </a>
+                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-map-pin text-lg"></i>
+                        <span>地址管理</span>
+                    </a>
+                </div>
+
+                <!-- 订单管理 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
+                    <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-clipboard-text text-lg"></i>
+                        <span>回收订单</span>
+                        <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">128</span>
+                    </a>
+                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-user-gear text-lg"></i>
+                        <span>回收员管理</span>
+                    </a>
+                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-package text-lg"></i>
+                        <span>回收品类</span>
+                    </a>
+                    <a href="admin-aftersale.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-headset text-lg"></i>
+                        <span>售后管理</span>
+                    </a>
+                </div>
+
+                <!-- 网点管理 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">网点管理</p>
+                    <a href="admin-stations.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-storefront text-lg"></i>
+                        <span>回收网点</span>
+                    </a>
+                </div>
+
+                <!-- 分类指南 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">分类指南</p>
+                    <a href="#waste-categories" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-trash text-lg"></i>
+                        <span>垃圾分类</span>
+                    </a>
+                    <a href="#waste-items" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-list-bullets text-lg"></i>
+                        <span>物品管理</span>
+                    </a>
+                    <a href="#recognition" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-scan text-lg"></i>
+                        <span>识别记录</span>
+                    </a>
+                </div>
+
+                <!-- 积分商城 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">积分商城</p>
+                    <a href="#products" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-gift text-lg"></i>
+                        <span>商品管理</span>
+                    </a>
+                    <a href="#exchanges" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-swap text-lg"></i>
+                        <span>兑换记录</span>
+                    </a>
+                    <a href="#points" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-coins text-lg"></i>
+                        <span>积分流水</span>
+                    </a>
+                </div>
+
+                <!-- 社区管理 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">社区管理</p>
+                    <a href="#topics" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-hash text-lg"></i>
+                        <span>话题管理</span>
+                    </a>
+                    <a href="#posts" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-article text-lg"></i>
+                        <span>帖子管理</span>
+                    </a>
+                    <a href="#activities" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-calendar text-lg"></i>
+                        <span>活动管理</span>
+                    </a>
+                </div>
+
+                <!-- 系统设置 -->
+                <div class="px-4 mb-2">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">系统设置</p>
+                    <a href="#notifications" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-bell text-lg"></i>
+                        <span>消息推送</span>
+                    </a>
+                    <a href="#settings" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                        <i class="ph ph-gear text-lg"></i>
+                        <span>系统设置</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User Info -->
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">管理员</p>
+                        <p class="text-xs text-gray-500">admin@recycle.com</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-white"><i class="ph ph-sign-out text-lg"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Header -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-500 hover:text-gray-700 lg:hidden"><i class="ph ph-list text-2xl"></i></button>
+                    <div class="relative">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" placeholder="搜索..." class="w-64 pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="relative text-gray-500 hover:text-gray-700">
+                        <i class="ph ph-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">5</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700"><i class="ph ph-gear text-xl"></i></button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section">
+                    <!-- Page Title -->
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-gray-800">控制台</h1>
+                        <p class="text-gray-500 text-sm">欢迎回来，这是今日数据概览</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="ph ph-users text-2xl text-blue-600"></i>
+                                </div>
+                                <span class="text-green-500 text-sm font-medium flex items-center gap-1">
+                                    <i class="ph ph-trend-up"></i> +12%
+                                </span>
+                            </div>
+                            <h3 id="dashboard-total-users" class="text-2xl font-bold text-gray-800">12,580</h3>
+                            <p class="text-gray-500 text-sm">注册用户</p>
+                        </div>
+
+                        <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="ph ph-clipboard-text text-2xl text-green-600"></i>
+                                </div>
+                                <span class="text-green-500 text-sm font-medium flex items-center gap-1">
+                                    <i class="ph ph-trend-up"></i> +8%
+                                </span>
+                            </div>
+                            <h3 id="dashboard-today-orders" class="text-2xl font-bold text-gray-800">3,842</h3>
+                            <p class="text-gray-500 text-sm">今日订单</p>
+                        </div>
+
+                        <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <i class="ph ph-leaf text-2xl text-orange-600"></i>
+                                </div>
+                                <span class="text-green-500 text-sm font-medium flex items-center gap-1">
+                                    <i class="ph ph-trend-up"></i> +15%
+                                </span>
+                            </div>
+                            <h3 id="dashboard-today-carbon" class="text-2xl font-bold text-gray-800">1,256 kg</h3>
+                            <p class="text-gray-500 text-sm">今日减碳量</p>
+                        </div>
+
+                        <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="ph ph-coins text-2xl text-purple-600"></i>
+                                </div>
+                                <span class="text-red-500 text-sm font-medium flex items-center gap-1">
+                                    <i class="ph ph-trend-down"></i> -3%
+                                </span>
+                            </div>
+                            <h3 id="dashboard-total-points" class="text-2xl font-bold text-gray-800">58,420</h3>
+                            <p class="text-gray-500 text-sm">积分发放</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Order Trend Chart -->
+                        <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-bold text-gray-800">订单趋势</h3>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 text-xs bg-primary text-white rounded-lg">周</button>
+                                    <button class="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg">月</button>
+                                    <button class="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg">年</button>
+                                </div>
+                            </div>
+                            <div class="h-64 flex items-end justify-between gap-2 px-4">
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/20 rounded-t" style="height: 60%"></div>
+                                    <span class="text-xs text-gray-500">周一</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/40 rounded-t" style="height: 75%"></div>
+                                    <span class="text-xs text-gray-500">周二</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/60 rounded-t" style="height: 45%"></div>
+                                    <span class="text-xs text-gray-500">周三</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/80 rounded-t" style="height: 90%"></div>
+                                    <span class="text-xs text-gray-500">周四</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary rounded-t" style="height: 70%"></div>
+                                    <span class="text-xs text-gray-500">周五</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/70 rounded-t" style="height: 85%"></div>
+                                    <span class="text-xs text-gray-500">周六</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center gap-2">
+                                    <div class="w-full bg-primary/50 rounded-t" style="height: 55%"></div>
+                                    <span class="text-xs text-gray-500">周日</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Distribution -->
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-800 mb-6">回收品类分布</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">纸板箱</span>
+                                        <span class="font-medium">35%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full">
+                                        <div class="h-full bg-blue-500 rounded-full" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">塑料瓶</span>
+                                        <span class="font-medium">28%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full">
+                                        <div class="h-full bg-green-500 rounded-full" style="width: 28%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">旧衣物</span>
+                                        <span class="font-medium">20%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full">
+                                        <div class="h-full bg-orange-500 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">废旧家电</span>
+                                        <span class="font-medium">12%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full">
+                                        <div class="h-full bg-purple-500 rounded-full" style="width: 12%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">其他</span>
+                                        <span class="font-medium">5%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full">
+                                        <div class="h-full bg-gray-500 rounded-full" style="width: 5%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders & Top Users -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Recent Orders -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                                <h3 class="font-bold text-gray-800">最新订单</h3>
+                                <a href="#orders" class="text-primary text-sm hover:underline">查看全部</a>
+                            </div>
+                            <div class="divide-y divide-gray-50">
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="ph ph-package text-green-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">纸板箱回收</p>
+                                        <p class="text-xs text-gray-500">张三 · 5分钟前</p>
+                                    </div>
+                                    <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">待上门</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="ph ph-t-shirt text-blue-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">旧衣物回收</p>
+                                        <p class="text-xs text-gray-500">李四 · 12分钟前</p>
+                                    </div>
+                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">进行中</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="ph ph-monitor text-purple-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">废旧家电</p>
+                                        <p class="text-xs text-gray-500">王五 · 30分钟前</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">已完成</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="ph ph-book text-orange-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">旧书籍回收</p>
+                                        <p class="text-xs text-gray-500">赵六 · 1小时前</p>
+                                    </div>
+                                    <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">已完成</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Users -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                                <h3 class="font-bold text-gray-800">活跃用户排行</h3>
+                                <a href="#users" class="text-primary text-sm hover:underline">查看全部</a>
+                            </div>
+                            <div class="divide-y divide-gray-50">
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <span class="w-6 text-center font-bold text-yellow-500">1</span>
+                                    <img src="https://i.pravatar.cc/40?img=1" class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">环保小卫士</p>
+                                        <p class="text-xs text-gray-500">Lv.5 环保达人</p>
+                                    </div>
+                                    <span class="text-sm font-bold text-primary">2,850 分</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <span class="w-6 text-center font-bold text-gray-400">2</span>
+                                    <img src="https://i.pravatar.cc/40?img=2" class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">绿色生活家</p>
+                                        <p class="text-xs text-gray-500">Lv.4 减碳先锋</p>
+                                    </div>
+                                    <span class="text-sm font-bold text-primary">2,180 分</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <span class="w-6 text-center font-bold text-orange-400">3</span>
+                                    <img src="https://i.pravatar.cc/40?img=3" class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">分类小能手</p>
+                                        <p class="text-xs text-gray-500">Lv.3 绿色达人</p>
+                                    </div>
+                                    <span class="text-sm font-bold text-primary">1,950 分</span>
+                                </div>
+                                <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+                                    <span class="w-6 text-center font-bold text-gray-400">4</span>
+                                    <img src="https://i.pravatar.cc/40?img=4" class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">低碳生活</p>
+                                        <p class="text-xs text-gray-500">Lv.3 绿色达人</p>
+                                    </div>
+                                    <span class="text-sm font-bold text-primary">1,800 分</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+<script>
+    const API_BASE = 'http://127.0.0.1:5000';
+
+    async function loadDashboardSummary() {
+        try {
+            const res = await fetch(`${API_BASE}/api/dashboard/summary`);
+            if (!res.ok) return;
+            const data = await res.json();
+
+            const totalUsersEl = document.getElementById('dashboard-total-users');
+            const todayOrdersEl = document.getElementById('dashboard-today-orders');
+            const todayCarbonEl = document.getElementById('dashboard-today-carbon');
+            const totalPointsEl = document.getElementById('dashboard-total-points');
+
+            if (totalUsersEl && typeof data.total_users !== 'undefined') {
+                totalUsersEl.textContent = data.total_users;
+            }
+            if (todayOrdersEl && typeof data.today_orders !== 'undefined') {
+                todayOrdersEl.textContent = data.today_orders;
+            }
+            if (todayCarbonEl && typeof data.today_carbon_kg !== 'undefined') {
+                todayCarbonEl.textContent = data.today_carbon_kg + ' kg';
+            }
+            if (totalPointsEl && typeof data.total_points_earned !== 'undefined') {
+                totalPointsEl.textContent = data.total_points_earned;
+            }
+        } catch (e) {
+            console.error('加载仪表盘数据失败', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDashboardSummary();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">分类指南</view>
+  </view>
+  <view class="capsule">
+    <image class="icon-sm" src="/image/dots-three.png"></image>
+    <view class="divider"></view>
+    <image class="icon-sm" src="/image/target.png"></image>
+  </view>
+</view>
+
+<scroll-view scroll-y class="container bg-white" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <view class="content-padding">
+    <!-- Search -->
+    <view class="search-area">
+      <view class="search-box">
+        <image class="icon-search" src="/image/magnifying-glass.png"></image>
+        <input type="text" placeholder="输入物品名称查询分类..." class="search-input" />
+      </view>
+    </view>
+
+    <!-- Main Categories -->
+    <view class="main-categories">
+      <view class="cat-card bg-blue shadow-blue" bindtap="navigateToDetail" data-type="recyclable">
+        <image class="cat-icon-bg" src="/image/recycle.png"></image>
+        <view class="cat-content">
+          <text class="cat-title">可回收物</text>
+          <text class="cat-desc">适宜回收、可循环利用的生活废弃物</text>
+        </view>
+      </view>
+      <view class="cat-card bg-red shadow-red" bindtap="navigateToDetail" data-type="hazardous">
+        <image class="cat-icon-bg" src="/image/warning-octagon.png"></image>
+        <view class="cat-content">
+          <text class="cat-title">有害垃圾</text>
+          <text class="cat-desc">对人体健康或自然环境造成直接或潜在危害</text>
+        </view>
+      </view>
+      <view class="cat-card bg-green shadow-green" bindtap="navigateToDetail" data-type="kitchen">
+        <image class="cat-icon-bg" src="/image/fish.png"></image>
+        <view class="cat-content">
+          <text class="cat-title">厨余垃圾</text>
+          <text class="cat-desc">易腐烂的、含有机质的生活废弃物</text>
+        </view>
+      </view>
+      <view class="cat-card bg-gray shadow-gray" bindtap="navigateToDetail" data-type="other">
+        <image class="cat-icon-bg" src="/image/trash.png"></image>
+        <view class="cat-content">
+          <text class="cat-title">其他垃圾</text>
+          <text class="cat-desc">除上述类别之外的生活废弃物</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Common Queries -->
+    <view class="common-queries">
+      <text class="section-title">常见查询</text>
+      <view class="query-list">
+        <view class="query-item">
+          <view class="query-left">
+            <view class="query-icon-circle bg-gray-100">
+              <image class="icon-query" src="/image/clock.png"></image> <!-- Using clock as coffee cup placeholder -->
+            </view>
+            <text class="query-name">一次性咖啡杯</text>
+          </view>
+          <text class="query-tag bg-gray-200 text-gray-600">其他垃圾</text>
+        </view>
+        <view class="query-item">
+          <view class="query-left">
+            <view class="query-icon-circle bg-gray-100">
+              <image class="icon-query red-tint" src="/image/warning-octagon.png"></image> <!-- Using warning as battery placeholder -->
+            </view>
+            <text class="query-name">废旧电池</text>
+          </view>
+          <text class="query-tag bg-red-100 text-red-600">有害垃圾</text>
+        </view>
+        <view class="query-item">
+          <view class="query-left">
+            <view class="query-icon-circle bg-gray-100">
+              <image class="icon-query green-tint" src="/image/leaf.png"></image> <!-- Using leaf as fruit peel placeholder -->
+            </view>
+            <text class="query-name">果皮菜叶</text>
+          </view>
+          <text class="query-tag bg-green-100 text-green-600">厨余垃圾</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view style="height: 40px;"></view>
+</scroll-view>

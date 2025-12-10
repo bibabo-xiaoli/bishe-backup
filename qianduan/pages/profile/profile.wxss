@@ -1,0 +1,268 @@
+/** profile.wxss */
+.container {
+  min-height: 100vh;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+/* Nav Bar */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; /* Right aligned for profile */
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.capsule-right {
+  width: 87px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  pointer-events: auto;
+}
+
+.icon-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background-color: #ccc;
+}
+
+/* User Header */
+.user-header {
+  background-color: white;
+  padding-top: 100px; /* Space for nav bar */
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.user-info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.avatar-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  overflow: hidden;
+  border: 2px solid #3F7745;
+  margin-right: 16px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1f2937;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.user-level {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-xs {
+  width: 16px;
+  height: 16px;
+}
+
+.user-level text {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.icon-gear {
+  width: 24px;
+  height: 24px;
+  color: #9ca3af;
+}
+
+/* Stats Row */
+.stats-row {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-item {
+  flex: 1;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bg-green-50 { background-color: #f0fdf4; }
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-orange-50 { background-color: #fff7ed; }
+
+.stat-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.stat-val {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.text-green { color: #15803d; }
+.text-blue { color: #1d4ed8; }
+.text-orange { color: #c2410c; }
+
+.stat-unit {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+/* Menu List */
+.menu-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.card-more {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.icon-arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+}
+
+.order-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.order-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.order-item text {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.menu-group {
+  padding: 0;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+}
+
+.menu-item:active {
+  background-color: #f9fafb;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-green { color: #16a34a; filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%); } /* Approximate green filter or replace with actual colored icons if available */
+/* Since we use images, tinting via CSS filter is tricky without SVG. Assuming images are colored or we accept default. The provided images are colored PNGs based on previous context */
+
+.menu-left text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-orange {
+  font-size: 12px;
+  color: #f97316;
+}
+
