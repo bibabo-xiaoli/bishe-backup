@@ -1,0 +1,36 @@
+<!-- Custom Navigation Bar -->
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">地址管理</view>
+  </view>
+</view>
+
+<view class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px; padding-bottom: 80px;">
+  <block wx:if="{{addresses.length > 0}}">
+    <view class="address-list p-4">
+      <view class="address-card bg-white p-4 rounded-xl mb-3 flex justify-between items-center" wx:for="{{addresses}}" wx:key="id" bindtap="editAddress" data-id="{{item.id}}">
+        <view class="flex-1">
+          <view class="flex items-center gap-2 mb-1">
+            <text class="font-bold text-gray-800">{{item.name}}</text>
+            <text class="text-gray-500 text-sm">{{item.phone}}</text>
+            <text class="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded" wx:if="{{item.tag}}">{{item.tag}}</text>
+            <text class="bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded" wx:if="{{item.is_default}}">默认</text>
+          </view>
+          <view class="text-gray-600 text-sm">{{item.full_address}}</view>
+        </view>
+        <image class="w-4 h-4 ml-4" src="/image/caret-right.png"></image>
+      </view>
+    </view>
+  </block>
+  <block wx:else>
+    <view class="flex flex-col items-center justify-center pt-20">
+      <image src="/image/map-pin.png" class="w-16 h-16 opacity-20 mb-4"></image>
+      <text class="text-gray-400">暂无地址</text>
+    </view>
+  </block>
+</view>
+
+<view class="fixed bottom-0 left-0 w-full p-4 bg-white border-t safe-area-bottom">
+  <button class="bg-primary text-white w-full rounded-full py-3 font-bold" bindtap="addAddress">添加新地址</button>
+</view>

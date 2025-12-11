@@ -82,6 +82,31 @@
       </view>
     </view>
 
+    <!-- Appointment Time -->
+    <view class="section">
+      <view class="section-title">预约时间</view>
+      <view class="time-selection">
+        <view class="time-row">
+          <view class="time-label">预约日期</view>
+          <picker mode="date" value="{{date}}" start="{{date}}" bindchange="bindDateChange">
+            <view class="time-picker">
+              <text class="time-value">{{date || '请选择日期'}}</text>
+              <image class="icon-arrow" src="/image/caret-right.png"></image>
+            </view>
+          </picker>
+        </view>
+        <view class="time-row">
+          <view class="time-label">上门时段</view>
+          <picker mode="selector" range="{{timeSlots}}" value="{{timeIndex}}" bindchange="bindTimePickerChange">
+            <view class="time-picker">
+              <text class="time-value {{time ? '' : 'placeholder'}}">{{time || '请选择时段'}}</text>
+              <image class="icon-arrow" src="/image/caret-right.png"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
     <!-- Address -->
     <view class="section">
       <view class="section-title">上门地址</view>

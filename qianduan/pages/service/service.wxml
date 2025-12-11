@@ -1,0 +1,35 @@
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">联系客服</view>
+  </view>
+</view>
+
+<view class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <view class="p-6 text-center bg-white mb-4">
+    <view class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <image class="w-8 h-8" src="/image/phone.png"></image>
+    </view>
+    <view class="text-lg font-bold mb-2">在线客服</view>
+    <view class="text-gray-500 text-sm mb-6">工作时间：09:00 - 21:00</view>
+    <button class="bg-primary text-white w-40 rounded-full py-2 text-sm" open-type="contact">立即咨询</button>
+  </view>
+
+  <view class="bg-white p-4">
+    <view class="font-bold mb-4">常见问题</view>
+    <block wx:for="{{faqs}}" wx:key="index">
+      <view class="mb-4 pb-4 border-b last:border-0 last:mb-0 last:pb-0">
+        <view class="text-sm font-medium mb-1">Q: {{item.q}}</view>
+        <view class="text-xs text-gray-500">A: {{item.a}}</view>
+      </view>
+    </block>
+  </view>
+
+  <view class="mt-4 p-4 bg-white flex justify-between items-center" bindtap="callPhone">
+    <view>
+      <view class="font-bold">电话客服</view>
+      <view class="text-xs text-gray-500">400-123-4567</view>
+    </view>
+    <image class="w-5 h-5" src="/image/phone.png"></image>
+  </view>
+</view>

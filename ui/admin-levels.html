@@ -80,7 +80,7 @@
 
             <main class="flex-1 overflow-y-auto p-6">
                 <!-- Level Cards -->
-                <div class="grid grid-cols-5 gap-4 mb-8">
+                <div id="level-cards" class="grid grid-cols-5 gap-4 mb-8">
                     <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-6 text-center relative overflow-hidden">
                         <div class="absolute top-2 right-2 text-gray-400"><i class="ph ph-pencil cursor-pointer hover:text-gray-600"></i></div>
                         <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
@@ -145,7 +145,7 @@
                                 <th class="px-4 py-3">操作</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="level-table-body" class="divide-y">
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-4"><span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">Lv.1</span></td>
                                 <td class="px-4 py-4 font-medium">环保新手</td>
@@ -207,5 +207,61 @@
             </main>
         </div>
     </div>
+<script>
+const API_BASE = 'http://127.0.0.1:5000';
+const LEVEL_COLORS = ['gray', 'green', 'blue', 'purple', 'yellow'];
+const LEVEL_ICONS = ['ph-plant', 'ph-leaf', 'ph-tree', 'ph-medal', 'ph-crown'];
+
+async function loadLevels() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/user_levels`);
+        const data = await resp.json();
+        renderLevelCards(data.items);
+        renderLevelTable(data.items);
+    } catch (e) {
+        console.error('加载等级数据失败:', e);
+    }
+}
+
+function renderLevelCards(items) {
+    const container = document.getElementById('level-cards');
+    container.innerHTML = items.map((item, idx) => {
+        const color = LEVEL_COLORS[idx % LEVEL_COLORS.length];
+        const icon = item.badge_icon || LEVEL_ICONS[idx % LEVEL_ICONS.length];
+        const maxPoints = item.max_points >= 999999 ? '+' : ` - ${item.max_points.toLocaleString()}`;
+        return `
+        <div class="bg-gradient-to-br from-${color}-100 to-${color}-200 rounded-xl p-6 text-center relative overflow-hidden">
+            <div class="absolute top-2 right-2 text-${color}-400"><i class="ph ph-pencil cursor-pointer hover:text-${color}-600"></i></div>
+            <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                <i class="ph ${icon} text-3xl text-${color}-500"></i>
+            </div>
+            <h3 class="font-bold text-${color}-700 mb-1">${item.name}</h3>
+            <p class="text-xs text-${color}-600 mb-2">${item.min_points.toLocaleString()}${maxPoints} 积分</p>
+            <p class="text-sm font-medium text-${color}-700">${item.user_count.toLocaleString()} 人</p>
+        </div>`;
+    }).join('');
+}
+
+function renderLevelTable(items) {
+    const tbody = document.getElementById('level-table-body');
+    tbody.innerHTML = items.map((item, idx) => {
+        const color = LEVEL_COLORS[idx % LEVEL_COLORS.length];
+        const icon = item.badge_icon || LEVEL_ICONS[idx % LEVEL_ICONS.length];
+        const maxPoints = item.max_points >= 999999 ? '+' : ` - ${item.max_points.toLocaleString()}`;
+        return `
+        <tr class="hover:bg-gray-50">
+            <td class="px-4 py-4"><span class="bg-${color}-200 text-${color}-700 px-3 py-1 rounded-full text-xs font-bold">Lv.${idx + 1}</span></td>
+            <td class="px-4 py-4 font-medium">${item.name.replace(/^Lv\.\d+\s*/, '')}</td>
+            <td class="px-4 py-4">${item.min_points.toLocaleString()}${maxPoints}</td>
+            <td class="px-4 py-4"><i class="ph ${icon} text-2xl text-${color}-500"></i></td>
+            <td class="px-4 py-4 text-gray-500 text-xs">${item.description || '-'}</td>
+            <td class="px-4 py-4">${item.user_count.toLocaleString()}</td>
+            <td class="px-4 py-4"><button class="text-primary hover:underline mr-2">编辑</button></td>
+        </tr>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadLevels);
+</script>
 </body>
 </html>

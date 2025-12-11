@@ -87,7 +87,7 @@
                                 <i class="ph ph-users text-xl text-blue-600"></i>
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-gray-800">86</p>
+                                <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
                                 <p class="text-xs text-gray-500">总回收员</p>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                                 <i class="ph ph-broadcast text-xl text-green-600"></i>
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-green-600">42</p>
+                                <p id="stat-online" class="text-2xl font-bold text-green-600">0</p>
                                 <p class="text-xs text-gray-500">当前在线</p>
                             </div>
                         </div>
@@ -179,7 +179,7 @@
                                 <th class="px-4 py-3">操作</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="collector-table-body" class="divide-y">
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
                                 <td class="px-4 py-3 text-gray-500 font-mono text-xs">C10001</td>
@@ -347,7 +347,7 @@
                     
                     <!-- Pagination -->
                     <div class="px-4 py-3 border-t flex items-center justify-between">
-                        <span class="text-sm text-gray-500">共 86 条记录</span>
+                        <span id="collector-total-text" class="text-sm text-gray-500">共 0 条记录</span>
                         <div class="flex gap-1">
                             <button class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
                             <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
@@ -360,5 +360,71 @@
             </main>
         </div>
     </div>
+<script>
+const API_BASE = 'http://127.0.0.1:5000';
+
+async function loadCollectors() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/collectors`);
+        const data = await resp.json();
+        renderStats(data.stats);
+        renderCollectorTable(data.items);
+        document.getElementById('collector-total-text').textContent = `共 ${data.total} 条记录`;
+    } catch (e) {
+        console.error('加载回收员数据失败:', e);
+    }
+}
+
+function renderStats(stats) {
+    document.getElementById('stat-total').textContent = stats.total_collectors || 0;
+    document.getElementById('stat-online').textContent = stats.online || 0;
+}
+
+function renderCollectorTable(items) {
+    const tbody = document.getElementById('collector-table-body');
+    if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-gray-500">暂无回收员数据</td></tr>';
+        return;
+    }
+    tbody.innerHTML = items.map(item => {
+        const isDisabled = item.status === 2;
+        const isOnline = item.status === 1;
+        const rowClass = isDisabled ? 'hover:bg-gray-50 bg-red-50/30' : 'hover:bg-gray-50';
+        const nameClass = isDisabled ? 'text-gray-400' : 'text-gray-800';
+        const imgOpacity = isDisabled ? 'opacity-50' : '';
+        const phone = item.phone ? item.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '-';
+        const statusHtml = isDisabled ? '<span class="text-red-500 text-xs">已禁用</span>' :
+            isOnline ? '<span class="flex items-center gap-1 text-green-600"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 在线</span>' :
+            '<span class="text-gray-400 text-xs">离线</span>';
+        const ratingHtml = item.rating ? `<span class="flex items-center gap-1"><i class="ph-fill ph-star text-yellow-500"></i><span class="font-medium">${item.rating}</span></span>` : '-';
+        const createdDate = item.created_at ? item.created_at.split(' ')[0] : '-';
+        const actionHtml = isDisabled ? 
+            '<button class="text-primary hover:underline">详情</button><button class="text-green-500 hover:underline ml-2">启用</button>' :
+            '<button class="text-primary hover:underline">编辑</button><button class="text-gray-400 hover:text-red-500 ml-2">禁用</button>';
+        
+        return `
+        <tr class="${rowClass}">
+            <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+            <td class="px-4 py-3 text-gray-500 font-mono text-xs">${item.collector_code}</td>
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <img src="${item.avatar_url || 'https://i.pravatar.cc/40'}" class="w-10 h-10 rounded-full ${imgOpacity}">
+                    <span class="font-medium ${nameClass}">${item.name}</span>
+                </div>
+            </td>
+            <td class="px-4 py-3 ${isDisabled ? 'text-gray-400' : ''}">${phone}</td>
+            <td class="px-4 py-3">${statusHtml}</td>
+            <td class="px-4 py-3 text-gray-600">-</td>
+            <td class="px-4 py-3 font-medium">-</td>
+            <td class="px-4 py-3">-</td>
+            <td class="px-4 py-3">${ratingHtml}</td>
+            <td class="px-4 py-3 text-gray-500">${createdDate}</td>
+            <td class="px-4 py-3"><div class="flex items-center gap-2">${actionHtml}</div></td>
+        </tr>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadCollectors);
+</script>
 </body>
 </html>

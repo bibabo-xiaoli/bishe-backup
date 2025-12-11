@@ -81,19 +81,19 @@
                 <div class="p-6 pb-0">
                     <div class="grid grid-cols-4 gap-4 mb-6">
                         <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-red-500">
-                            <p class="text-2xl font-bold text-red-600">8</p>
+                            <p id="stat-pending" class="text-2xl font-bold text-red-600">0</p>
                             <p class="text-xs text-gray-500">待处理</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-500">
-                            <p class="text-2xl font-bold text-orange-600">12</p>
+                            <p id="stat-processing" class="text-2xl font-bold text-orange-600">0</p>
                             <p class="text-xs text-gray-500">处理中</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-green-500">
-                            <p class="text-2xl font-bold text-green-600">256</p>
+                            <p id="stat-resolved" class="text-2xl font-bold text-green-600">0</p>
                             <p class="text-xs text-gray-500">已解决</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-gray-400">
-                            <p class="text-2xl font-bold text-gray-600">98.5%</p>
+                            <p id="stat-rate" class="text-2xl font-bold text-gray-600">0%</p>
                             <p class="text-xs text-gray-500">解决率</p>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                                     <th class="px-4 py-3">操作</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y">
+                            <tbody id="aftersale-table-body" class="divide-y">
                                 <tr class="hover:bg-gray-50 bg-red-50/30">
                                     <td class="px-4 py-3 font-mono text-xs text-gray-600">AS20231025001</td>
                                     <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">20231024015</td>
@@ -316,5 +316,64 @@
             </div>
         </div>
     </div>
+<script>
+const API_BASE = 'http://127.0.0.1:5000';
+const TYPE_COLORS = {'积分问题': 'orange', '订单问题': 'purple', '回收员问题': 'blue', '其他问题': 'gray'};
+const STATUS_MAP = {1: {label: '待处理', bg: 'red'}, 2: {label: '处理中', bg: 'orange'}, 3: {label: '已解决', bg: 'green'}, 4: {label: '已关闭', bg: 'gray'}};
+
+async function loadAfterSales() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/after_sales`);
+        const data = await resp.json();
+        renderStats(data.stats);
+        renderAfterSaleTable(data.items);
+    } catch (e) {
+        console.error('加载售后数据失败:', e);
+    }
+}
+
+function renderStats(stats) {
+    document.getElementById('stat-pending').textContent = stats.pending || 0;
+    document.getElementById('stat-processing').textContent = stats.processing || 0;
+    document.getElementById('stat-resolved').textContent = stats.resolved || 0;
+    document.getElementById('stat-rate').textContent = (stats.resolve_rate || 0) + '%';
+}
+
+function renderAfterSaleTable(items) {
+    const tbody = document.getElementById('aftersale-table-body');
+    if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-gray-500">暂无售后工单</td></tr>';
+        return;
+    }
+    tbody.innerHTML = items.map(item => {
+        const status = STATUS_MAP[item.status] || {label: '未知', bg: 'gray'};
+        const typeColor = TYPE_COLORS[item.type] || 'gray';
+        const rowBg = item.status === 1 ? 'bg-red-50/30' : item.status === 2 ? 'bg-orange-50/30' : '';
+        const createdAt = item.created_at ? item.created_at.substring(0, 16).replace(' ', ' ') : '-';
+        
+        return `
+        <tr class="hover:bg-gray-50 ${rowBg}">
+            <td class="px-4 py-3 font-mono text-xs text-gray-600">AS${String(item.id).padStart(8, '0')}</td>
+            <td class="px-4 py-3 font-mono text-xs text-primary cursor-pointer hover:underline">${item.order_no || '-'}</td>
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <img src="${item.user_avatar_url || 'https://i.pravatar.cc/24'}" class="w-6 h-6 rounded-full">
+                    <span>${item.user_nickname || '-'}</span>
+                </div>
+            </td>
+            <td class="px-4 py-3"><span class="bg-${typeColor}-100 text-${typeColor}-600 px-2 py-0.5 rounded text-xs">${item.type || '-'}</span></td>
+            <td class="px-4 py-3 max-w-[200px]"><p class="truncate text-gray-600">${item.description || '-'}</p></td>
+            <td class="px-4 py-3"><span class="bg-${status.bg}-100 text-${status.bg}-600 px-2 py-0.5 rounded text-xs font-medium">${status.label}</span></td>
+            <td class="px-4 py-3 text-gray-500">${createdAt}</td>
+            <td class="px-4 py-3 text-gray-400">-</td>
+            <td class="px-4 py-3">
+                <button class="text-primary hover:underline mr-2">${item.status === 1 ? '处理' : '详情'}</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadAfterSales);
+</script>
 </body>
 </html>

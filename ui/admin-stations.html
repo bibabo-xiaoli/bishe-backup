@@ -141,19 +141,19 @@
                         <div class="space-y-2">
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600">总网点</span>
-                                <span class="font-bold text-gray-800">156</span>
+                                <span id="stat-total" class="font-bold text-gray-800">0</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600">运行中</span>
-                                <span class="font-bold text-green-600">142</span>
+                                <span id="stat-running" class="font-bold text-green-600">0</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600">维护中</span>
-                                <span class="font-bold text-orange-600">8</span>
+                                <span id="stat-maintenance" class="font-bold text-orange-600">0</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600">已停用</span>
-                                <span class="font-bold text-gray-500">6</span>
+                                <span id="stat-disabled" class="font-bold text-gray-500">0</span>
                             </div>
                         </div>
                     </div>
@@ -190,7 +190,7 @@
                     </div>
 
                     <!-- List -->
-                    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div id="station-list" class="flex-1 overflow-y-auto p-4 space-y-3">
                         <!-- Station 1 -->
                         <div class="bg-white border rounded-xl p-4 hover:shadow-md transition cursor-pointer">
                             <div class="flex gap-4">
@@ -342,7 +342,7 @@
 
                     <!-- Pagination -->
                     <div class="p-4 border-t flex items-center justify-between">
-                        <span class="text-sm text-gray-500">共 156 个网点</span>
+                        <span id="station-total-text" class="text-sm text-gray-500">共 0 个网点</span>
                         <div class="flex gap-1">
                             <button class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
                             <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
@@ -406,5 +406,75 @@
             </div>
         </div>
     </div>
+<script>
+const API_BASE = 'http://127.0.0.1:5000';
+
+async function loadStations() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/stations`);
+        const data = await resp.json();
+        renderStats(data.stats);
+        renderStationList(data.items);
+        document.getElementById('station-total-text').textContent = `共 ${data.total} 个网点`;
+    } catch (e) {
+        console.error('加载网点数据失败:', e);
+    }
+}
+
+function renderStats(stats) {
+    document.getElementById('stat-total').textContent = stats.total_stations || 0;
+    document.getElementById('stat-running').textContent = stats.running || 0;
+    document.getElementById('stat-maintenance').textContent = stats.maintenance || 0;
+    document.getElementById('stat-disabled').textContent = stats.disabled || 0;
+}
+
+function renderStationList(items) {
+    const container = document.getElementById('station-list');
+    if (!items || items.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500 py-8">暂无网点数据</p>';
+        return;
+    }
+    container.innerHTML = items.map(item => {
+        const isDisabled = item.status_id === 3;
+        const isMaintenance = item.status_id === 2;
+        const bgClass = isDisabled ? 'bg-gray-50 border-gray-200 opacity-60' : 
+                        isMaintenance ? 'bg-orange-50/50 border-orange-200' : 'bg-white border';
+        const iconBg = isDisabled ? 'bg-gray-200' : isMaintenance ? 'bg-orange-100' : 
+                       item.type === '服务站' ? 'bg-green-100' : 'bg-blue-100';
+        const iconColor = isDisabled ? 'text-gray-400' : isMaintenance ? 'text-orange-500' :
+                          item.type === '服务站' ? 'text-green-600' : 'text-blue-500';
+        const icon = item.type === '服务站' ? 'ph-storefront' : 'ph-recycle';
+        const statusBg = isDisabled ? 'bg-gray-200 text-gray-500' : 
+                         isMaintenance ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600';
+        const statusText = item.status_name || (isDisabled ? '已停用' : isMaintenance ? '维护中' : '运行中');
+        
+        return `
+        <div class="${bgClass} rounded-xl p-4 hover:shadow-md transition cursor-pointer">
+            <div class="flex gap-4">
+                <div class="w-14 h-14 ${iconBg} rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="ph ${icon} text-2xl ${iconColor}"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-bold text-gray-800 truncate">${item.name}</h4>
+                        <span class="${statusBg} text-xs px-2 py-0.5 rounded flex-shrink-0">${statusText}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2 truncate">${item.full_address || '-'}</p>
+                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                        <span class="flex items-center gap-1"><i class="ph ${icon}"></i> ${item.type || '-'}</span>
+                        <span class="flex items-center gap-1"><i class="ph ph-clock"></i> ${item.opening_hours || '-'}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1 flex-shrink-0">
+                    <button class="text-xs text-primary hover:underline">编辑</button>
+                    <button class="text-xs text-gray-400 hover:text-orange-500">${isDisabled ? '启用' : '维护'}</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadStations);
+</script>
 </body>
 </html>

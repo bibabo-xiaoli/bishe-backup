@@ -228,6 +228,47 @@
   margin-left: 2px;
 }
 
+/* Time Selection */
+.time-selection {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.time-row:last-child {
+  border-bottom: none;
+}
+
+.time-label {
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.time-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.time-value.placeholder {
+  color: #9ca3af;
+}
+
 /* Address Card */
 .address-card {
   border: 1px solid #e5e7eb;

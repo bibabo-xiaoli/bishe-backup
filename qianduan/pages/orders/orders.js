@@ -1,4 +1,5 @@
 const app = getApp()
+const api = require('../../utils/api')
 
 Page({
   data: {
@@ -6,57 +7,12 @@ Page({
     navBarHeight: 44,
     currentTab: 'pending',
     orders: {
-      pending: [
-        {
-          id: '20231024001',
-          icon: '/image/package.png',
-          title: '纸板箱, 旧衣物',
-          weight: '5-10kg',
-          time: '明天 09:00-11:00'
-        },
-        {
-          id: '20231025008',
-          icon: '/image/monitor.png',
-          title: '废旧家电 (微波炉)',
-          weight: '<5kg',
-          time: '后天 14:00-16:00'
-        }
-      ],
-      processing: [
-        {
-          id: '20231024099',
-          icon: '/image/book.png',
-          title: '旧书籍, 报刊',
-          collector: '李师傅 139****8888',
-          eta: '15分钟后'
-        }
-      ],
-      completed: [
-        {
-          time: '2023-10-20 15:30',
-          icon: '/image/beer-bottle.png',
-          title: '塑料瓶, 易拉罐',
-          realWeight: '3.5kg',
-          points: 85
-        },
-        {
-          time: '2023-10-15 10:00',
-          icon: '/image/t-shirt.png',
-          title: '旧衣物',
-          realWeight: '12.0kg',
-          points: 240
-        }
-      ],
-      aftersale: [
-        {
-          id: '20231010055',
-          icon: '/image/package.png',
-          title: '混合回收物',
-          issue: '积分计算有误',
-          status: '客服正在核实中...'
-        }
-      ]
-    }
+      pending: [],
+      processing: [],
+      completed: [],
+      aftersale: []
+    },
+    loading: true
   },
 
   onLoad(options) {
@@ -66,6 +22,31 @@ Page({
       navBarHeight: 44,
       currentTab: options.type || 'pending'
     })
+    this.loadOrders()
+  },
+
+  onShow() {
+    this.loadOrders()
+  },
+
+  async loadOrders() {
+    try {
+      const res = await api.getOrders()
+      const allOrders = res.orders || []
+      
+      // 按状态分组
+      const orders = {
+        pending: allOrders.filter(o => o.status === 1),
+        processing: allOrders.filter(o => o.status === 2),
+        completed: allOrders.filter(o => o.status === 3),
+        aftersale: allOrders.filter(o => o.status === 4 || o.status === 5)
+      }
+      
+      this.setData({ orders, loading: false })
+    } catch (e) {
+      console.error('获取订单失败:', e)
+      this.setData({ loading: false })
+    }
   },
 
   goBack() {
@@ -74,8 +55,40 @@ Page({
 
   switchTab(e) {
     const tab = e.currentTarget.dataset.tab
-    this.setData({
-      currentTab: tab
+    this.setData({ currentTab: tab })
+  },
+
+  cancelOrder(e) {
+    const orderId = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '确认取消',
+      content: '确定要取消这个订单吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await api.post(`/api/mp/orders/${orderId}/cancel`)
+            wx.showToast({ title: '已取消' })
+            this.loadOrders()
+          } catch (e) {
+            wx.showToast({ title: '取消失败', icon: 'none' })
+          }
+        }
+      }
     })
+  },
+
+  contactCollector(e) {
+    const phone = e.currentTarget.dataset.phone
+    if (phone) {
+      wx.makePhoneCall({ phoneNumber: phone })
+    }
+  },
+
+  contactService() {
+    wx.navigateTo({ url: '/pages/service/service' })
+  },
+
+  reorder(e) {
+    wx.navigateTo({ url: '/pages/appointment/appointment' })
   }
 })

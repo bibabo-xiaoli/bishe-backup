@@ -84,7 +84,7 @@
                                 <i class="ph ph-map-pin text-xl text-blue-600"></i>
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-gray-800">28,456</p>
+                                <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
                                 <p class="text-xs text-gray-500">总地址数</p>
                             </div>
                         </div>
@@ -171,7 +171,7 @@
                                 <th class="px-4 py-3">操作</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y">
+                        <tbody id="address-table-body" class="divide-y">
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
                                 <td class="px-4 py-3 text-gray-500 font-mono text-xs">A10001</td>
@@ -282,7 +282,7 @@
                     
                     <!-- Pagination -->
                     <div class="px-4 py-3 border-t flex items-center justify-between">
-                        <span class="text-sm text-gray-500">共 28,456 条记录</span>
+                        <span id="address-total-text" class="text-sm text-gray-500">共 0 条记录</span>
                         <div class="flex gap-1">
                             <button class="px-3 py-1 border rounded text-sm text-gray-400">上一页</button>
                             <button class="px-3 py-1 bg-primary text-white rounded text-sm">1</button>
@@ -296,5 +296,56 @@
             </main>
         </div>
     </div>
+<script>
+const API_BASE = 'http://127.0.0.1:5000';
+const TAG_COLORS = {'家': 'green', '公司': 'blue', '其他': 'gray'};
+
+async function loadAddresses() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/addresses`);
+        const data = await resp.json();
+        document.getElementById('stat-total').textContent = data.total.toLocaleString();
+        document.getElementById('address-total-text').textContent = `共 ${data.total.toLocaleString()} 条记录`;
+        renderAddressTable(data.items);
+    } catch (e) {
+        console.error('加载地址数据失败:', e);
+    }
+}
+
+function renderAddressTable(items) {
+    const tbody = document.getElementById('address-table-body');
+    if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">暂无地址数据</td></tr>';
+        return;
+    }
+    tbody.innerHTML = items.map(item => {
+        const tagColor = TAG_COLORS[item.tag] || 'gray';
+        const phone = item.phone ? item.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '-';
+        const createdDate = item.created_at ? item.created_at.split(' ')[0] : '-';
+        const defaultIcon = item.is_default ? '<i class="ph-fill ph-star text-yellow-500"></i>' : '<i class="ph ph-star text-gray-300"></i>';
+        
+        return `
+        <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+            <td class="px-4 py-3 text-gray-500 font-mono text-xs">A${String(item.id).padStart(5, '0')}</td>
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <img src="https://i.pravatar.cc/32?u=${item.user_id}" class="w-8 h-8 rounded-full">
+                    <span class="font-medium">${item.user_nickname || '-'}</span>
+                </div>
+            </td>
+            <td class="px-4 py-3">${item.name || '-'}</td>
+            <td class="px-4 py-3">${phone}</td>
+            <td class="px-4 py-3 max-w-[300px]"><p class="truncate text-gray-600">${item.full_address || '-'}</p></td>
+            <td class="px-4 py-3"><span class="bg-${tagColor}-100 text-${tagColor}-600 px-2 py-0.5 rounded text-xs">${item.tag || '-'}</span></td>
+            <td class="px-4 py-3">${defaultIcon}</td>
+            <td class="px-4 py-3 text-gray-500">${createdDate}</td>
+            <td class="px-4 py-3"><button class="text-primary hover:underline mr-2">查看</button></td>
+        </tr>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadAddresses);
+</script>
 </body>
 </html>

@@ -173,29 +173,344 @@ HTTP 状态码：`404`
 
 ---
 
-## 5. 未来规划接口（尚未实现）
+## 5. 订单管理
 
-> 以下接口尚未在后端代码中实现，需根据 `ui/数据库表.md` 及各前端页面继续设计。
+### `GET /api/orders`
 
-### 5.1 订单管理相关
+- **功能**：订单列表与状态统计，供 `ui/admin-orders.html` 使用。
+- **请求参数（QueryString）**：
 
-- `GET /api/orders`：订单列表，支持按订单号 / 用户 / 手机号 / 类别 / 回收员 / 状态 / 时间范围等筛选；对接 `ui/admin-orders.html`。
-- `GET /api/orders/{id}`：订单详情，包括各分类重量、积分、照片、地址等。
-- `PUT /api/orders/{id}`：更新订单状态（接单、上门中、已完成、已取消等）。
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| `page` | int | 否 | 页码，默认 1 |
+| `per_page` | int | 否 | 每页数量，默认 10，最大 100 |
+| `search` | string | 否 | 模糊搜索（订单号/用户昵称/手机号）|
+| `status` | int | 否 | 订单状态（1待上门/2进行中/3已完成/4已取消/5售后）|
+| `date_start` | string | 否 | 预约日期起始（YYYY-MM-DD）|
+| `date_end` | string | 否 | 预约日期结束（YYYY-MM-DD）|
 
-### 5.2 用户积分与排行榜
+- **响应示例**：
 
-- `GET /api/users/top-points`：积分排行榜，用于首页“积分排行榜”模块。
-- `GET /api/users/top-carbon`：减碳量排行榜（如需要）。
+```json
+{
+  "total": 10,
+  "page": 1,
+  "per_page": 10,
+  "items": [...],
+  "stats": {
+    "total_orders": 10,
+    "pending": 2,
+    "processing": 2,
+    "completed": 5,
+    "canceled": 1
+  }
+}
+```
 
-### 5.3 小程序端业务接口（示例）
+### `GET /api/orders/{id}`
 
-- `POST /api/miniprogram/orders`：用户发起预约回收订单。
-- `GET /api/stations/nearby`：根据经纬度获取附近回收网点。
-- `GET /api/mall/products`：积分商城商品列表。
-- `POST /api/mall/exchange`：积分兑换商品。
-- `GET /api/community/topics`、`/api/community/posts` 等：社区模块相关接口。
+- **功能**：订单详情，含用户、地址、回收员及各品类明细。
 
 ---
 
-如需，我可以在后续步骤中继续为上述“未来规划接口”设计详细字段和示例请求/响应。
+## 6. 用户等级管理
+
+### `GET /api/user_levels`
+
+- **功能**：用户等级列表及每个等级的用户数，供 `ui/admin-levels.html` 使用。
+- **响应示例**：
+
+```json
+{
+  "total": 5,
+  "items": [
+    {
+      "id": 1,
+      "name": "Lv.1 环保新手",
+      "min_points": 0,
+      "max_points": 500,
+      "badge_icon": "ph-plant",
+      "description": "刚刚加入环保大家庭",
+      "user_count": 3
+    }
+  ]
+}
+```
+
+---
+
+## 7. 回收品类管理
+
+### `GET /api/categories`
+
+- **功能**：回收品类列表，供 `ui/admin-categories.html` 使用。
+- **请求参数**：`page`, `per_page`, `search`
+
+### `POST /api/categories`
+
+- **功能**：创建新的回收品类。
+- **请求体**：`name`(必填), `icon`, `points_per_kg`, `description`, `sort_order`
+
+### `PUT /api/categories/{id}`
+
+- **功能**：更新回收品类配置。
+
+### `DELETE /api/categories/{id}`
+
+- **功能**：删除回收品类（若已被订单引用则返回 400）。
+
+---
+
+## 8. 回收网点管理
+
+### `GET /api/stations`
+
+- **功能**：回收网点列表与统计，供 `ui/admin-stations.html` 使用。
+- **请求参数**：`page`, `per_page`, `search`, `type`, `status_id`
+- **响应示例**：
+
+```json
+{
+  "total": 6,
+  "page": 1,
+  "per_page": 10,
+  "items": [...],
+  "stats": {
+    "total_stations": 6,
+    "running": 4,
+    "maintenance": 1,
+    "disabled": 1
+  }
+}
+```
+
+### `POST /api/stations`
+
+- **功能**：创建新的回收网点。
+- **请求体**：`name`(必填), `type`, `status_id`, `province`, `city`, `district`, `address_detail`, `latitude`, `longitude`, `opening_hours`, `contact_phone`, `remark`
+
+---
+
+## 9. 回收员管理
+
+### `GET /api/collectors`
+
+- **功能**：回收员列表与统计，供 `ui/admin-collectors.html` 使用。
+- **请求参数**：`page`, `per_page`, `search`, `status`
+- **响应示例**：
+
+```json
+{
+  "total": 6,
+  "page": 1,
+  "per_page": 10,
+  "items": [
+    {
+      "id": 1,
+      "collector_code": "C00001",
+      "name": "李师傅",
+      "phone": "15800000001",
+      "avatar_url": "...",
+      "rating": 4.8,
+      "status": 1,
+      "status_label": "在线",
+      "created_at": "2023-08-13 02:23:47"
+    }
+  ],
+  "stats": {
+    "total_collectors": 6,
+    "online": 4,
+    "offline": 1,
+    "disabled": 1
+  }
+}
+```
+
+---
+
+## 10. 售后工单管理
+
+### `GET /api/after_sales`
+
+- **功能**：售后工单列表与统计，供 `ui/admin-aftersale.html` 使用。
+- **请求参数**：`page`, `per_page`, `search`, `status`, `type`, `date_start`, `date_end`
+- **响应示例**：
+
+```json
+{
+  "total": 6,
+  "page": 1,
+  "per_page": 10,
+  "items": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "order_no": "20231201001",
+      "user_id": 1,
+      "user_nickname": "张三",
+      "type": "积分问题",
+      "description": "订单完成后积分未到账",
+      "status": 3,
+      "status_label": "已解决",
+      "created_at": "2023-12-07 02:23:47",
+      "resolved_at": "2023-12-08 02:23:47"
+    }
+  ],
+  "stats": {
+    "total_tickets": 6,
+    "pending": 2,
+    "processing": 1,
+    "resolved": 2,
+    "closed": 1,
+    "resolve_rate": 33.3
+  }
+}
+```
+
+---
+
+## 11. 用户地址管理
+
+### `GET /api/addresses`
+
+- **功能**：用户地址列表，供 `ui/admin-address.html` 使用。
+- **请求参数**：`page`, `per_page`, `search`, `user_id`
+- **响应示例**：
+
+```json
+{
+  "total": 6,
+  "page": 1,
+  "per_page": 10,
+  "items": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "user_nickname": "张三",
+      "name": "张三",
+      "phone": "13800000001",
+      "province": "重庆市",
+      "city": "渝北区",
+      "district": "龙溪街道",
+      "address_detail": "金龙路168号龙湖时代天街A座1202",
+      "full_address": "重庆市渝北区龙溪街道金龙路168号龙湖时代天街A座1202",
+      "tag": "家",
+      "is_default": 1,
+      "created_at": "2023-11-11 02:23:47"
+    }
+  ]
+}
+```
+
+---
+
+## 12. 小程序端 API
+
+### `GET /api/mp/user`
+
+- **功能**：获取当前用户信息（模拟用户ID=1）
+- **响应示例**：
+
+```json
+{
+  "id": 1,
+  "nickname": "张三",
+  "avatar_url": "https://i.pravatar.cc/100?img=1",
+  "phone": "13800000001",
+  "level_name": "Lv.2 环保入门",
+  "total_points": 1200,
+  "current_points": 800,
+  "total_carbon_kg": 25.5,
+  "recycle_count": 15
+}
+```
+
+### `GET /api/mp/orders`
+
+- **功能**：获取当前用户的订单列表
+- **请求参数**：`user_id`(可选), `status`(可选)
+- **响应示例**：
+
+```json
+{
+  "orders": [
+    {
+      "id": 1,
+      "order_no": "20231201001",
+      "status": 3,
+      "status_label": "已完成",
+      "categories": "纸板箱, 旧衣物",
+      "estimated_weight": "5-10 kg",
+      "appointment_date": "2025-12-06",
+      "time_slot": "09:00-11:00",
+      "collector_name": "李师傅",
+      "collector_phone": "15800000001",
+      "estimated_points": 150,
+      "actual_points": 180,
+      "carbon_saved_kg": 3.6,
+      "created_at": "2025-12-06 02:23",
+      "completed_at": "2025-12-06 02:23"
+    }
+  ]
+}
+```
+
+### `POST /api/mp/orders`
+
+- **功能**：创建预约回收订单
+- **请求体**：
+
+```json
+{
+  "category_id": 1,
+  "appointment_date": "2025-12-15",
+  "time_slot": "09:00-11:00",
+  "estimated_weight": "5kg",
+  "address_id": 1,
+  "remark": "请准时上门"
+}
+```
+
+- **响应示例**：
+
+```json
+{
+  "success": true,
+  "order_id": 11,
+  "order_no": "2025121112345",
+  "message": "预约成功"
+}
+```
+
+### `GET /api/mp/ranking`
+
+- **功能**：积分/减碳排行榜
+- **请求参数**：`type`(points/carbon), `limit`(默认20)
+- **响应示例**：
+
+```json
+{
+  "type": "points",
+  "ranking": [
+    {
+      "rank": 1,
+      "user_id": 9,
+      "nickname": "环保达人",
+      "avatar_url": "https://i.pravatar.cc/100?img=9",
+      "score": 18500,
+      "recycle_count": 210
+    }
+  ]
+}
+```
+
+---
+
+## 13. 未来规划接口（尚未实现）
+
+### 13.1 小程序端扩展
+
+- `GET /api/stations/nearby`：根据经纬度获取附近回收网点
+- `GET /api/mall/products`：积分商城商品列表
+- `POST /api/mall/exchange`：积分兑换商品
+- `GET /api/community/topics`、`/api/community/posts`：社区模块相关接口

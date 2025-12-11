@@ -256,52 +256,52 @@ def register_routes(app: Flask) -> None:
             },
         )
 
-	    @app.route("/api/user_levels", methods=["GET"])
-	    def list_user_levels():
-	        """用户等级列表及每个等级的用户数，供 admin-levels.html 使用。"""
+    @app.route("/api/user_levels", methods=["GET"])
+    def list_user_levels():
+        """用户等级列表及每个等级的用户数，供 admin-levels.html 使用。"""
 
-	        db = get_db()
-	        cursor = db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
-	        cursor.execute(
-	            """
-	            SELECT
-	                l.id,
-	                l.level_name,
-	                l.min_points,
-	                l.max_points,
-	                l.badge_icon,
-	                l.description,
-	                COUNT(u.id) AS user_count
-	            FROM user_level l
-	            LEFT JOIN user u ON u.level_id = l.id
-	            GROUP BY
-	                l.id,
-	                l.level_name,
-	                l.min_points,
-	                l.max_points,
-	                l.badge_icon,
-	                l.description
-	            ORDER BY l.min_points ASC, l.id ASC
-	            """,
-	        )
-	        rows = cursor.fetchall()
+        cursor.execute(
+            """
+            SELECT
+                l.id,
+                l.level_name,
+                l.min_points,
+                l.max_points,
+                l.badge_icon,
+                l.description,
+                COUNT(u.id) AS user_count
+            FROM user_level l
+            LEFT JOIN user u ON u.level_id = l.id
+            GROUP BY
+                l.id,
+                l.level_name,
+                l.min_points,
+                l.max_points,
+                l.badge_icon,
+                l.description
+            ORDER BY l.min_points ASC, l.id ASC
+            """,
+        )
+        rows = cursor.fetchall()
 
-	        items: list[dict] = []
-	        for row in rows:
-	            items.append(
-	                {
-	                    "id": row["id"],
-	                    "name": row["level_name"],
-	                    "min_points": row["min_points"],
-	                    "max_points": row["max_points"],
-	                    "badge_icon": row["badge_icon"],
-	                    "description": row["description"],
-	                    "user_count": row["user_count"],
-	                },
-	            )
+        items: list[dict] = []
+        for row in rows:
+            items.append(
+                {
+                    "id": row["id"],
+                    "name": row["level_name"],
+                    "min_points": row["min_points"],
+                    "max_points": row["max_points"],
+                    "badge_icon": row["badge_icon"],
+                    "description": row["description"],
+                    "user_count": row["user_count"],
+                },
+            )
 
-	        return jsonify({"total": len(items), "items": items})
+        return jsonify({"total": len(items), "items": items})
 
     @app.route("/api/categories", methods=["GET"])
     def list_categories():
@@ -512,352 +512,352 @@ def register_routes(app: Flask) -> None:
 
         return jsonify({"success": True})
 
-	    @app.route("/api/stations", methods=["GET"])
-	    def list_stations():
-	        """回收网点列表与统计，供 admin-stations.html 使用。"""
+    @app.route("/api/stations", methods=["GET"])
+    def list_stations():
+        """回收网点列表与统计，供 admin-stations.html 使用。"""
 
-	        db = get_db()
-	        cursor = db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
-	        page = max(int(request.args.get("page", 1)), 1)
-	        per_page = min(int(request.args.get("per_page", 10)), 100)
-	        search = request.args.get("search", "").strip()
-	        station_type = request.args.get("type", "").strip() or None
-	        status_id = request.args.get("status_id")
+        page = max(int(request.args.get("page", 1)), 1)
+        per_page = min(int(request.args.get("per_page", 10)), 100)
+        search = request.args.get("search", "").strip()
+        station_type = request.args.get("type", "").strip() or None
+        status_id = request.args.get("status_id")
 
-	        where: list[str] = []
-	        params: list[object] = []
+        where: list[str] = []
+        params: list[object] = []
 
-	        if search:
-	            where.append(
-	                "(s.name LIKE %s OR s.address_detail LIKE %s OR s.city LIKE %s)",
-	            )
-	            like = f"%{search}%"
-	            params.extend([like, like, like])
+        if search:
+            where.append(
+                "(s.name LIKE %s OR s.address_detail LIKE %s OR s.city LIKE %s)",
+            )
+            like = f"%{search}%"
+            params.extend([like, like, like])
 
-	        if station_type:
-	            where.append("s.type = %s")
-	            params.append(station_type)
+        if station_type:
+            where.append("s.type = %s")
+            params.append(station_type)
 
-	        if status_id:
-	            where.append("s.status_id = %s")
-	            params.append(status_id)
+        if status_id:
+            where.append("s.status_id = %s")
+            params.append(status_id)
 
-	        where_sql = " WHERE " + " AND ".join(where) if where else ""
-	        base_from = (
-	            " FROM recycle_station s "
-	            "LEFT JOIN station_status st ON s.status_id = st.id "
-	        )
+        where_sql = " WHERE " + " AND ".join(where) if where else ""
+        base_from = (
+            " FROM recycle_station s "
+            "LEFT JOIN station_status st ON s.status_id = st.id "
+        )
 
-	        # 统计总数及各状态数量（基于当前筛选条件）
-	        cursor.execute(
-	            "SELECT "
-	            "COUNT(*) AS total, "
-	            "SUM(CASE WHEN s.status_id = 1 THEN 1 ELSE 0 END) AS running_count, "
-	            "SUM(CASE WHEN s.status_id = 2 THEN 1 ELSE 0 END) AS maintenance_count, "
-	            "SUM(CASE WHEN s.status_id = 3 THEN 1 ELSE 0 END) AS disabled_count "
-	            + base_from
-	            + where_sql,
-	            params,
-	        )
-	        stat_row = cursor.fetchone() or {}
-	        total = stat_row.get("total", 0)
+        # 统计总数及各状态数量（基于当前筛选条件）
+        cursor.execute(
+            "SELECT "
+            "COUNT(*) AS total, "
+            "SUM(CASE WHEN s.status_id = 1 THEN 1 ELSE 0 END) AS running_count, "
+            "SUM(CASE WHEN s.status_id = 2 THEN 1 ELSE 0 END) AS maintenance_count, "
+            "SUM(CASE WHEN s.status_id = 3 THEN 1 ELSE 0 END) AS disabled_count "
+            + base_from
+            + where_sql,
+            params,
+        )
+        stat_row = cursor.fetchone() or {}
+        total = stat_row.get("total", 0)
 
-	        cursor.execute(
-	            "SELECT "
-	            "s.id, s.name, s.type, s.status_id, st.name AS status_name, "
-	            "s.province, s.city, s.district, s.address_detail, "
-	            "s.latitude, s.longitude, s.opening_hours, s.contact_phone, s.created_at "
-	            + base_from
-	            + where_sql
-	            + " ORDER BY s.created_at DESC LIMIT %s OFFSET %s",
-	            params + [per_page, (page - 1) * per_page],
-	        )
-	        rows = cursor.fetchall()
+        cursor.execute(
+            "SELECT "
+            "s.id, s.name, s.type, s.status_id, st.name AS status_name, "
+            "s.province, s.city, s.district, s.address_detail, "
+            "s.latitude, s.longitude, s.opening_hours, s.contact_phone, s.created_at "
+            + base_from
+            + where_sql
+            + " ORDER BY s.created_at DESC LIMIT %s OFFSET %s",
+            params + [per_page, (page - 1) * per_page],
+        )
+        rows = cursor.fetchall()
 
-	        items: list[dict] = []
-	        for row in rows:
-	            address_parts = [
-	                row.get("province"),
-	                row.get("city"),
-	                row.get("district"),
-	                row.get("address_detail"),
-	            ]
-	            full_address = "".join(part for part in address_parts if part) or None
-	            created_at = row.get("created_at")
-	            items.append(
-	                {
-	                    "id": row["id"],
-	                    "name": row["name"],
-	                    "type": row["type"],
-	                    "status_id": row["status_id"],
-	                    "status_name": row["status_name"],
-	                    "province": row["province"],
-	                    "city": row["city"],
-	                    "district": row["district"],
-	                    "address_detail": row["address_detail"],
-	                    "full_address": full_address,
-	                    "latitude": float(row["latitude"]) if row.get("latitude") is not None else None,
-	                    "longitude": float(row["longitude"]) if row.get("longitude") is not None else None,
-	                    "opening_hours": row["opening_hours"],
-	                    "contact_phone": row["contact_phone"],
-	                    "created_at": (
-	                        created_at.strftime("%Y-%m-%d %H:%M:%S")
-	                        if created_at
-	                        else None
-	                    ),
-	                },
-	            )
+        items: list[dict] = []
+        for row in rows:
+            address_parts = [
+                row.get("province"),
+                row.get("city"),
+                row.get("district"),
+                row.get("address_detail"),
+            ]
+            full_address = "".join(part for part in address_parts if part) or None
+            created_at = row.get("created_at")
+            items.append(
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "type": row["type"],
+                    "status_id": row["status_id"],
+                    "status_name": row["status_name"],
+                    "province": row["province"],
+                    "city": row["city"],
+                    "district": row["district"],
+                    "address_detail": row["address_detail"],
+                    "full_address": full_address,
+                    "latitude": float(row["latitude"]) if row.get("latitude") is not None else None,
+                    "longitude": float(row["longitude"]) if row.get("longitude") is not None else None,
+                    "opening_hours": row["opening_hours"],
+                    "contact_phone": row["contact_phone"],
+                    "created_at": (
+                        created_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if created_at
+                        else None
+                    ),
+                },
+            )
 
-	        stats = {
-	            "total_stations": total,
-	            "running": stat_row.get("running_count", 0),
-	            "maintenance": stat_row.get("maintenance_count", 0),
-	            "disabled": stat_row.get("disabled_count", 0),
-	        }
+        stats = {
+            "total_stations": total,
+            "running": stat_row.get("running_count", 0),
+            "maintenance": stat_row.get("maintenance_count", 0),
+            "disabled": stat_row.get("disabled_count", 0),
+        }
 
-	        return jsonify(
-	            {
-	                "total": total,
-	                "page": page,
-	                "per_page": per_page,
-	                "items": items,
-	                "stats": stats,
-	            },
-	        )
+        return jsonify(
+            {
+                "total": total,
+                "page": page,
+                "per_page": per_page,
+                "items": items,
+                "stats": stats,
+            },
+        )
 
-	    @app.route("/api/stations", methods=["POST"])
-	    def create_station():
-	        """创建新的回收网点，供 admin-stations.html 的“添加网点”使用。"""
+    @app.route("/api/stations", methods=["POST"])
+    def create_station():
+        """创建新的回收网点，供 admin-stations.html 的“添加网点”使用。"""
 
-	        db = get_db()
-	        cursor = db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
-	        data = request.get_json(silent=True) or {}
-	        name = (data.get("name") or "").strip()
-	        if not name:
-	            return jsonify({"error": "name is required"}), 400
+        data = request.get_json(silent=True) or {}
+        name = (data.get("name") or "").strip()
+        if not name:
+            return jsonify({"error": "name is required"}), 400
 
-	        station_type = (data.get("type") or "").strip() or None
-	        province = (data.get("province") or "").strip() or None
-	        city = (data.get("city") or "").strip() or None
-	        district = (data.get("district") or "").strip() or None
-	        address_detail = (data.get("address_detail") or "").strip() or None
-	        opening_hours = (data.get("opening_hours") or "").strip() or None
-	        contact_phone = (data.get("contact_phone") or "").strip() or None
-	        remark = (data.get("remark") or "").strip() or None
+        station_type = (data.get("type") or "").strip() or None
+        province = (data.get("province") or "").strip() or None
+        city = (data.get("city") or "").strip() or None
+        district = (data.get("district") or "").strip() or None
+        address_detail = (data.get("address_detail") or "").strip() or None
+        opening_hours = (data.get("opening_hours") or "").strip() or None
+        contact_phone = (data.get("contact_phone") or "").strip() or None
+        remark = (data.get("remark") or "").strip() or None
 
-	        status_id_raw = data.get("status_id")
-	        status_id: int | None = 1
-	        if status_id_raw not in (None, ""):
-	            try:
-	                status_id = int(status_id_raw)
-	            except (TypeError, ValueError):
-	                return jsonify({"error": "status_id must be an integer"}), 400
+        status_id_raw = data.get("status_id")
+        status_id: int | None = 1
+        if status_id_raw not in (None, ""):
+            try:
+                status_id = int(status_id_raw)
+            except (TypeError, ValueError):
+                return jsonify({"error": "status_id must be an integer"}), 400
 
-	        latitude = None
-	        longitude = None
-	        lat_raw = data.get("latitude")
-	        lon_raw = data.get("longitude")
-	        if lat_raw not in (None, ""):
-	            try:
-	                latitude = float(lat_raw)
-	            except (TypeError, ValueError):
-	                return jsonify({"error": "latitude must be a number"}), 400
-	        if lon_raw not in (None, ""):
-	            try:
-	                longitude = float(lon_raw)
-	            except (TypeError, ValueError):
-	                return jsonify({"error": "longitude must be a number"}), 400
+        latitude = None
+        longitude = None
+        lat_raw = data.get("latitude")
+        lon_raw = data.get("longitude")
+        if lat_raw not in (None, ""):
+            try:
+                latitude = float(lat_raw)
+            except (TypeError, ValueError):
+                return jsonify({"error": "latitude must be a number"}), 400
+        if lon_raw not in (None, ""):
+            try:
+                longitude = float(lon_raw)
+            except (TypeError, ValueError):
+                return jsonify({"error": "longitude must be a number"}), 400
 
-	        cursor.execute(
-	            "INSERT INTO recycle_station (name, type, status_id, province, city, district, "
-	            "address_detail, latitude, longitude, opening_hours, contact_phone, remark) "
-	            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-	            (
-	                name,
-	                station_type,
-	                status_id,
-	                province,
-	                city,
-	                district,
-	                address_detail,
-	                latitude,
-	                longitude,
-	                opening_hours,
-	                contact_phone,
-	                remark,
-	            ),
-	        )
-	        new_id = cursor.lastrowid
+        cursor.execute(
+            "INSERT INTO recycle_station (name, type, status_id, province, city, district, "
+            "address_detail, latitude, longitude, opening_hours, contact_phone, remark) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                name,
+                station_type,
+                status_id,
+                province,
+                city,
+                district,
+                address_detail,
+                latitude,
+                longitude,
+                opening_hours,
+                contact_phone,
+                remark,
+            ),
+        )
+        new_id = cursor.lastrowid
 
-	        cursor.execute(
-	            "SELECT "
-	            "s.id, s.name, s.type, s.status_id, st.name AS status_name, "
-	            "s.province, s.city, s.district, s.address_detail, "
-	            "s.latitude, s.longitude, s.opening_hours, s.contact_phone, s.created_at "
-	            "FROM recycle_station s "
-	            "LEFT JOIN station_status st ON s.status_id = st.id "
-	            "WHERE s.id = %s",
-	            (new_id,),
-	        )
-	        row = cursor.fetchone()
+        cursor.execute(
+            "SELECT "
+            "s.id, s.name, s.type, s.status_id, st.name AS status_name, "
+            "s.province, s.city, s.district, s.address_detail, "
+            "s.latitude, s.longitude, s.opening_hours, s.contact_phone, s.created_at "
+            "FROM recycle_station s "
+            "LEFT JOIN station_status st ON s.status_id = st.id "
+            "WHERE s.id = %s",
+            (new_id,),
+        )
+        row = cursor.fetchone()
 
-	        address_parts = [
-	            row.get("province"),
-	            row.get("city"),
-	            row.get("district"),
-	            row.get("address_detail"),
-	        ]
-	        full_address = "".join(part for part in address_parts if part) or None
-	        created_at = row.get("created_at")
+        address_parts = [
+            row.get("province"),
+            row.get("city"),
+            row.get("district"),
+            row.get("address_detail"),
+        ]
+        full_address = "".join(part for part in address_parts if part) or None
+        created_at = row.get("created_at")
 
-	        data = {
-	            "id": row["id"],
-	            "name": row["name"],
-	            "type": row["type"],
-	            "status_id": row["status_id"],
-	            "status_name": row["status_name"],
-	            "province": row["province"],
-	            "city": row["city"],
-	            "district": row["district"],
-	            "address_detail": row["address_detail"],
-	            "full_address": full_address,
-	            "latitude": float(row["latitude"]) if row.get("latitude") is not None else None,
-	            "longitude": float(row["longitude"]) if row.get("longitude") is not None else None,
-	            "opening_hours": row["opening_hours"],
-	            "contact_phone": row["contact_phone"],
-	            "created_at": (
-	                created_at.strftime("%Y-%m-%d %H:%M:%S") if created_at else None
-	            ),
-	        }
-	        return jsonify(data), 201
+        data = {
+            "id": row["id"],
+            "name": row["name"],
+            "type": row["type"],
+            "status_id": row["status_id"],
+            "status_name": row["status_name"],
+            "province": row["province"],
+            "city": row["city"],
+            "district": row["district"],
+            "address_detail": row["address_detail"],
+            "full_address": full_address,
+            "latitude": float(row["latitude"]) if row.get("latitude") is not None else None,
+            "longitude": float(row["longitude"]) if row.get("longitude") is not None else None,
+            "opening_hours": row["opening_hours"],
+            "contact_phone": row["contact_phone"],
+            "created_at": (
+                created_at.strftime("%Y-%m-%d %H:%M:%S") if created_at else None
+            ),
+        }
+        return jsonify(data), 201
 
-	    @app.route("/api/after_sales", methods=["GET"])
-	    def list_after_sales():
-	        """售后工单列表与统计，供 admin-aftersale.html 使用。"""
+    @app.route("/api/after_sales", methods=["GET"])
+    def list_after_sales():
+        """售后工单列表与统计，供 admin-aftersale.html 使用。"""
 
-	        db = get_db()
-	        cursor = db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
-	        page = max(int(request.args.get("page", 1)), 1)
-	        per_page = min(int(request.args.get("per_page", 10)), 100)
-	        search = request.args.get("search", "").strip()
-	        status = request.args.get("status")
-	        ticket_type = request.args.get("type", "").strip() or None
-	        date_start = request.args.get("date_start")
-	        date_end = request.args.get("date_end")
+        page = max(int(request.args.get("page", 1)), 1)
+        per_page = min(int(request.args.get("per_page", 10)), 100)
+        search = request.args.get("search", "").strip()
+        status = request.args.get("status")
+        ticket_type = request.args.get("type", "").strip() or None
+        date_start = request.args.get("date_start")
+        date_end = request.args.get("date_end")
 
-	        where: list[str] = []
-	        params: list[object] = []
+        where: list[str] = []
+        params: list[object] = []
 
-	        if search:
-	            where.append(
-	                "(CAST(a.id AS CHAR) LIKE %s OR o.order_no LIKE %s OR u.nickname LIKE %s)",
-	            )
-	            like = f"%{search}%"
-	            params.extend([like, like, like])
+        if search:
+            where.append(
+                "(CAST(a.id AS CHAR) LIKE %s OR o.order_no LIKE %s OR u.nickname LIKE %s)",
+            )
+            like = f"%{search}%"
+            params.extend([like, like, like])
 
-	        if status:
-	            where.append("a.status = %s")
-	            params.append(status)
+        if status:
+            where.append("a.status = %s")
+            params.append(status)
 
-	        if ticket_type:
-	            where.append("a.type = %s")
-	            params.append(ticket_type)
+        if ticket_type:
+            where.append("a.type = %s")
+            params.append(ticket_type)
 
-	        if date_start:
-	            where.append("DATE(a.created_at) >= %s")
-	            params.append(date_start)
+        if date_start:
+            where.append("DATE(a.created_at) >= %s")
+            params.append(date_start)
 
-	        if date_end:
-	            where.append("DATE(a.created_at) <= %s")
-	            params.append(date_end)
+        if date_end:
+            where.append("DATE(a.created_at) <= %s")
+            params.append(date_end)
 
-	        where_sql = " WHERE " + " AND ".join(where) if where else ""
-	        base_from = (
-	            " FROM after_sale a "
-	            "JOIN user u ON a.user_id = u.id "
-	            "JOIN recycle_order o ON a.order_id = o.id "
-	        )
+        where_sql = " WHERE " + " AND ".join(where) if where else ""
+        base_from = (
+            " FROM after_sale a "
+            "JOIN user u ON a.user_id = u.id "
+            "JOIN recycle_order o ON a.order_id = o.id "
+        )
 
-	        cursor.execute(
-	            "SELECT "
-	            "COUNT(*) AS total, "
-	            "SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS pending_count, "
-	            "SUM(CASE WHEN a.status = 2 THEN 1 ELSE 0 END) AS processing_count, "
-	            "SUM(CASE WHEN a.status = 3 THEN 1 ELSE 0 END) AS resolved_count, "
-	            "SUM(CASE WHEN a.status = 4 THEN 1 ELSE 0 END) AS closed_count "
-	            + base_from
-	            + where_sql,
-	            params,
-	        )
-	        stat_row = cursor.fetchone() or {}
-	        total = stat_row.get("total", 0)
+        cursor.execute(
+            "SELECT "
+            "COUNT(*) AS total, "
+            "SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS pending_count, "
+            "SUM(CASE WHEN a.status = 2 THEN 1 ELSE 0 END) AS processing_count, "
+            "SUM(CASE WHEN a.status = 3 THEN 1 ELSE 0 END) AS resolved_count, "
+            "SUM(CASE WHEN a.status = 4 THEN 1 ELSE 0 END) AS closed_count "
+            + base_from
+            + where_sql,
+            params,
+        )
+        stat_row = cursor.fetchone() or {}
+        total = stat_row.get("total", 0)
 
-	        cursor.execute(
-	            "SELECT "
-	            "a.id, a.order_id, a.user_id, a.type, a.description, a.status, "
-	            "a.created_at, a.resolved_at, "
-	            "u.nickname, u.avatar_url, "
-	            "o.order_no "
-	            + base_from
-	            + where_sql
-	            + " ORDER BY a.created_at DESC LIMIT %s OFFSET %s",
-	            params + [per_page, (page - 1) * per_page],
-	        )
-	        rows = cursor.fetchall()
+        cursor.execute(
+            "SELECT "
+            "a.id, a.order_id, a.user_id, a.type, a.description, a.status, "
+            "a.created_at, a.resolved_at, "
+            "u.nickname, u.avatar_url, "
+            "o.order_no "
+            + base_from
+            + where_sql
+            + " ORDER BY a.created_at DESC LIMIT %s OFFSET %s",
+            params + [per_page, (page - 1) * per_page],
+        )
+        rows = cursor.fetchall()
 
-	        items: list[dict] = []
-	        for row in rows:
-	            created_at = row.get("created_at")
-	            resolved_at = row.get("resolved_at")
-	            items.append(
-	                {
-	                    "id": row["id"],
-	                    "order_id": row["order_id"],
-	                    "order_no": row["order_no"],
-	                    "user_id": row["user_id"],
-	                    "user_nickname": row["nickname"],
-	                    "user_avatar_url": row["avatar_url"],
-	                    "type": row["type"],
-	                    "description": row["description"],
-	                    "status": row["status"],
-	                    "status_label": AFTER_SALE_STATUS_LABELS.get(row["status"], "未知"),
-	                    "created_at": (
-	                        created_at.strftime("%Y-%m-%d %H:%M:%S")
-	                        if created_at
-	                        else None
-	                    ),
-	                    "resolved_at": (
-	                        resolved_at.strftime("%Y-%m-%d %H:%M:%S")
-	                        if resolved_at
-	                        else None
-	                    ),
-	                },
-	            )
+        items: list[dict] = []
+        for row in rows:
+            created_at = row.get("created_at")
+            resolved_at = row.get("resolved_at")
+            items.append(
+                {
+                    "id": row["id"],
+                    "order_id": row["order_id"],
+                    "order_no": row["order_no"],
+                    "user_id": row["user_id"],
+                    "user_nickname": row["nickname"],
+                    "user_avatar_url": row["avatar_url"],
+                    "type": row["type"],
+                    "description": row["description"],
+                    "status": row["status"],
+                    "status_label": AFTER_SALE_STATUS_LABELS.get(row["status"], "未知"),
+                    "created_at": (
+                        created_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if created_at
+                        else None
+                    ),
+                    "resolved_at": (
+                        resolved_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if resolved_at
+                        else None
+                    ),
+                },
+            )
 
-	        resolved = stat_row.get("resolved_count", 0) or 0
-	        resolve_rate = float(resolved) / float(total) * 100 if total else 0.0
+        resolved = stat_row.get("resolved_count", 0) or 0
+        resolve_rate = float(resolved) / float(total) * 100 if total else 0.0
 
-	        stats = {
-	            "total_tickets": total,
-	            "pending": stat_row.get("pending_count", 0),
-	            "processing": stat_row.get("processing_count", 0),
-	            "resolved": resolved,
-	            "closed": stat_row.get("closed_count", 0),
-	            "resolve_rate": round(resolve_rate, 1),
-	        }
+        stats = {
+            "total_tickets": total,
+            "pending": stat_row.get("pending_count", 0),
+            "processing": stat_row.get("processing_count", 0),
+            "resolved": resolved,
+            "closed": stat_row.get("closed_count", 0),
+            "resolve_rate": round(resolve_rate, 1),
+        }
 
-	        return jsonify(
-	            {
-	                "total": total,
-	                "page": page,
-	                "per_page": per_page,
-	                "items": items,
-	                "stats": stats,
-	            },
-	        )
+        return jsonify(
+            {
+                "total": total,
+                "page": page,
+                "per_page": per_page,
+                "items": items,
+                "stats": stats,
+            },
+        )
 
     @app.route("/api/orders", methods=["GET"])
     def list_orders():
@@ -1143,6 +1143,444 @@ def register_routes(app: Flask) -> None:
         }
 
         return jsonify(data)
+
+    # ========== 回收员管理接口 ==========
+    @app.route("/api/collectors", methods=["GET"])
+    def list_collectors():
+        """回收员列表与统计，供 admin-collectors.html 使用。"""
+        db = get_db()
+        cursor = db.cursor()
+
+        page = max(int(request.args.get("page", 1)), 1)
+        per_page = min(int(request.args.get("per_page", 10)), 100)
+        search = request.args.get("search", "").strip()
+        status = request.args.get("status")
+
+        where: list[str] = []
+        params: list[object] = []
+
+        if search:
+            where.append("(name LIKE %s OR phone LIKE %s)")
+            like = f"%{search}%"
+            params.extend([like, like])
+
+        if status is not None and status != "":
+            where.append("status = %s")
+            params.append(status)
+
+        where_sql = " WHERE " + " AND ".join(where) if where else ""
+
+        # 统计
+        cursor.execute(
+            "SELECT COUNT(*) AS total, "
+            "SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS online_count, "
+            "SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS offline_count, "
+            "SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS disabled_count "
+            "FROM collector" + where_sql,
+            params,
+        )
+        stat_row = cursor.fetchone() or {}
+        total = stat_row.get("total", 0)
+
+        cursor.execute(
+            "SELECT id, name, phone, avatar_url, rating, status, created_at "
+            "FROM collector" + where_sql +
+            " ORDER BY created_at DESC LIMIT %s OFFSET %s",
+            params + [per_page, (page - 1) * per_page],
+        )
+        rows = cursor.fetchall()
+
+        items: list[dict] = []
+        for row in rows:
+            created_at = row.get("created_at")
+            items.append({
+                "id": row["id"],
+                "collector_code": f"C{row['id']:05d}",
+                "name": row["name"],
+                "phone": row["phone"],
+                "avatar_url": row["avatar_url"],
+                "rating": float(row["rating"]) if row.get("rating") else None,
+                "status": row["status"],
+                "status_label": COLLECTOR_STATUS_LABELS.get(row["status"], "未知"),
+                "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S") if created_at else None,
+            })
+
+        stats = {
+            "total_collectors": total,
+            "online": stat_row.get("online_count", 0) or 0,
+            "offline": stat_row.get("offline_count", 0) or 0,
+            "disabled": stat_row.get("disabled_count", 0) or 0,
+        }
+
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "items": items,
+            "stats": stats,
+        })
+
+    # ========== 用户地址管理接口 ==========
+    @app.route("/api/addresses", methods=["GET"])
+    def list_addresses():
+        """用户地址列表，供 admin-address.html 使用。"""
+        db = get_db()
+        cursor = db.cursor()
+
+        page = max(int(request.args.get("page", 1)), 1)
+        per_page = min(int(request.args.get("per_page", 10)), 100)
+        search = request.args.get("search", "").strip()
+        user_id = request.args.get("user_id")
+
+        where: list[str] = []
+        params: list[object] = []
+
+        if search:
+            where.append(
+                "(a.name LIKE %s OR a.phone LIKE %s OR a.address_detail LIKE %s OR u.nickname LIKE %s)"
+            )
+            like = f"%{search}%"
+            params.extend([like, like, like, like])
+
+        if user_id:
+            where.append("a.user_id = %s")
+            params.append(user_id)
+
+        where_sql = " WHERE " + " AND ".join(where) if where else ""
+        base_from = " FROM user_address a JOIN user u ON a.user_id = u.id "
+
+        cursor.execute(
+            "SELECT COUNT(*) AS total" + base_from + where_sql,
+            params,
+        )
+        total = cursor.fetchone()["total"]
+
+        cursor.execute(
+            "SELECT a.id, a.user_id, a.name, a.phone, a.province, a.city, a.district, "
+            "a.address_detail, a.tag, a.is_default, a.created_at, u.nickname AS user_nickname "
+            + base_from + where_sql +
+            " ORDER BY a.created_at DESC LIMIT %s OFFSET %s",
+            params + [per_page, (page - 1) * per_page],
+        )
+        rows = cursor.fetchall()
+
+        items: list[dict] = []
+        for row in rows:
+            address_parts = [row.get("province"), row.get("city"), row.get("district"), row.get("address_detail")]
+            full_address = "".join(part for part in address_parts if part) or None
+            created_at = row.get("created_at")
+            items.append({
+                "id": row["id"],
+                "user_id": row["user_id"],
+                "user_nickname": row["user_nickname"],
+                "name": row["name"],
+                "phone": row["phone"],
+                "province": row["province"],
+                "city": row["city"],
+                "district": row["district"],
+                "address_detail": row["address_detail"],
+                "full_address": full_address,
+                "tag": row["tag"],
+                "is_default": row["is_default"],
+                "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S") if created_at else None,
+            })
+
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "items": items,
+        })
+
+    # ========== 小程序端 API ==========
+
+    @app.route("/api/mp/user", methods=["GET"])
+    def mp_get_user():
+        """小程序端：获取当前用户信息（模拟，实际需要登录态）"""
+        db = get_db()
+        cursor = db.cursor()
+        # 模拟返回第一个用户作为当前用户
+        cursor.execute("""
+            SELECT u.*, l.level_name
+            FROM user u
+            LEFT JOIN user_level l ON u.level_id = l.id
+            WHERE u.id = 1
+        """)
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({"error": "User not found"}), 404
+
+        carbon = row["total_carbon_kg"]
+        return jsonify({
+            "id": row["id"],
+            "nickname": row["nickname"],
+            "avatar_url": row["avatar_url"],
+            "phone": row["phone"],
+            "level_name": row["level_name"],
+            "total_points": row["total_points"],
+            "current_points": row["current_points"],
+            "total_carbon_kg": float(carbon) if carbon else 0.0,
+            "recycle_count": row["recycle_count"],
+        })
+
+    @app.route("/api/mp/orders", methods=["GET"])
+    def mp_list_orders():
+        """小程序端：获取当前用户的订单列表"""
+        db = get_db()
+        cursor = db.cursor()
+
+        user_id = request.args.get("user_id", 1)  # 模拟当前用户
+        status = request.args.get("status")
+
+        where = ["o.user_id = %s"]
+        params: list[object] = [user_id]
+
+        if status:
+            where.append("o.status = %s")
+            params.append(status)
+
+        where_sql = " WHERE " + " AND ".join(where)
+
+        cursor.execute(
+            "SELECT o.id, o.order_no, o.status, o.appointment_date, o.time_slot, "
+            "o.estimated_points, o.actual_points, o.carbon_saved_kg, o.created_at, o.completed_at, "
+            "c.name AS collector_name, c.phone AS collector_phone "
+            "FROM recycle_order o "
+            "LEFT JOIN collector c ON o.collector_id = c.id "
+            + where_sql + " ORDER BY o.created_at DESC",
+            params,
+        )
+        rows = cursor.fetchall()
+
+        # 获取订单明细
+        order_ids = [row["id"] for row in rows]
+        items_by_order: dict[int, list] = {}
+        if order_ids:
+            placeholders = ",".join(["%s"] * len(order_ids))
+            cursor.execute(
+                f"SELECT i.order_id, rc.name AS category_name, i.estimated_weight, i.actual_weight "
+                f"FROM order_item i JOIN recycle_category rc ON i.category_id = rc.id "
+                f"WHERE i.order_id IN ({placeholders})",
+                order_ids,
+            )
+            for item in cursor.fetchall():
+                items_by_order.setdefault(item["order_id"], []).append(item)
+
+        orders = []
+        for row in rows:
+            order_items = items_by_order.get(row["id"], [])
+            categories = ", ".join([it["category_name"] for it in order_items])
+            weight = order_items[0]["estimated_weight"] if order_items else None
+
+            orders.append({
+                "id": row["id"],
+                "order_no": row["order_no"],
+                "status": row["status"],
+                "status_label": ORDER_STATUS_LABELS.get(row["status"], "未知"),
+                "categories": categories,
+                "estimated_weight": weight,
+                "appointment_date": row["appointment_date"].strftime("%Y-%m-%d") if row["appointment_date"] else None,
+                "time_slot": row["time_slot"],
+                "collector_name": row["collector_name"],
+                "collector_phone": row["collector_phone"],
+                "estimated_points": row["estimated_points"],
+                "actual_points": row["actual_points"],
+                "carbon_saved_kg": float(row["carbon_saved_kg"]) if row["carbon_saved_kg"] else 0.0,
+                "created_at": row["created_at"].strftime("%Y-%m-%d %H:%M") if row["created_at"] else None,
+                "completed_at": row["completed_at"].strftime("%Y-%m-%d %H:%M") if row["completed_at"] else None,
+            })
+
+        return jsonify({"orders": orders})
+
+    @app.route("/api/mp/orders", methods=["POST"])
+    def mp_create_order():
+        """小程序端：创建预约回收订单"""
+        db = get_db()
+        cursor = db.cursor()
+
+        data = request.get_json(silent=True) or {}
+        user_id = data.get("user_id", 1)  # 模拟当前用户
+        category_id = data.get("category_id")
+        estimated_weight = data.get("estimated_weight", "5-10kg")
+        appointment_date = data.get("appointment_date")
+        time_slot = data.get("time_slot")
+        address_id = data.get("address_id")
+        remark = data.get("remark", "")
+
+        if not category_id or not appointment_date or not time_slot:
+            return jsonify({"error": "缺少必填参数"}), 400
+
+        # 生成订单号
+        import time
+        order_no = time.strftime("%Y%m%d") + str(int(time.time() * 1000) % 100000).zfill(5)
+
+        # 计算预估积分
+        cursor.execute("SELECT points_per_kg FROM recycle_category WHERE id = %s", (category_id,))
+        cat_row = cursor.fetchone()
+        points_per_kg = cat_row["points_per_kg"] if cat_row else 10
+        estimated_points = points_per_kg * 5  # 假设5kg
+
+        cursor.execute(
+            "INSERT INTO recycle_order (order_no, user_id, address_id, status, appointment_date, "
+            "time_slot, estimated_points, remark) VALUES (%s, %s, %s, 1, %s, %s, %s, %s)",
+            (order_no, user_id, address_id, appointment_date, time_slot, estimated_points, remark),
+        )
+        order_id = cursor.lastrowid
+
+        # 插入订单明细
+        cursor.execute(
+            "INSERT INTO order_item (order_id, category_id, estimated_weight) VALUES (%s, %s, %s)",
+            (order_id, category_id, estimated_weight),
+        )
+
+        return jsonify({
+            "success": True,
+            "order_id": order_id,
+            "order_no": order_no,
+            "message": "预约成功",
+        }), 201
+
+    @app.route("/api/mp/orders/<int:order_id>/cancel", methods=["POST"])
+    def mp_cancel_order(order_id):
+        """小程序端：取消订单"""
+        db = get_db()
+        cursor = db.cursor()
+        user_id = 1  # 模拟当前用户
+
+        # 检查订单是否存在且属于当前用户
+        cursor.execute(
+            "SELECT id, status FROM recycle_order WHERE id = %s AND user_id = %s",
+            (order_id, user_id)
+        )
+        order = cursor.fetchone()
+        if not order:
+            return jsonify({"error": "订单不存在"}), 404
+
+        if order["status"] != 1:
+            return jsonify({"error": "只能取消待上门的订单"}), 400
+
+        # 更新订单状态为已取消 (status=4)
+        cursor.execute(
+            "UPDATE recycle_order SET status = 4 WHERE id = %s",
+            (order_id,)
+        )
+
+        return jsonify({"success": True, "message": "订单已取消"})
+
+    @app.route("/api/mp/ranking", methods=["GET"])
+    def mp_ranking():
+        """小程序端：积分/减碳排行榜"""
+        db = get_db()
+        cursor = db.cursor()
+
+        rank_type = request.args.get("type", "points")  # points 或 carbon
+        limit = min(int(request.args.get("limit", 20)), 50)
+
+        if rank_type == "carbon":
+            order_by = "total_carbon_kg DESC"
+            score_field = "total_carbon_kg"
+        else:
+            order_by = "total_points DESC"
+            score_field = "total_points"
+
+        cursor.execute(
+            f"SELECT id, nickname, avatar_url, {score_field} AS score, recycle_count "
+            f"FROM user ORDER BY {order_by} LIMIT %s",
+            (limit,),
+        )
+        rows = cursor.fetchall()
+
+        ranking = []
+        for idx, row in enumerate(rows):
+            score = row["score"]
+            ranking.append({
+                "rank": idx + 1,
+                "user_id": row["id"],
+                "nickname": row["nickname"],
+                "avatar_url": row["avatar_url"],
+                "score": float(score) if score else 0,
+                "recycle_count": row["recycle_count"],
+            })
+
+        return jsonify({"type": rank_type, "ranking": ranking})
+
+    @app.route("/api/mp/addresses", methods=["GET"])
+    def mp_list_addresses():
+        """小程序端：获取当前用户地址列表"""
+        db = get_db()
+        cursor = db.cursor()
+        user_id = request.args.get("user_id", 1) # 模拟
+
+        cursor.execute(
+            "SELECT * FROM user_address WHERE user_id = %s ORDER BY is_default DESC, created_at DESC",
+            (user_id,)
+        )
+        rows = cursor.fetchall()
+        
+        items = []
+        for row in rows:
+            items.append({
+                "id": row["id"],
+                "name": row["name"],
+                "phone": row["phone"],
+                "province": row["province"],
+                "city": row["city"],
+                "district": row["district"],
+                "address_detail": row["address_detail"],
+                "full_address": f"{row['province']}{row['city']}{row['district']}{row['address_detail']}",
+                "tag": row["tag"],
+                "is_default": row["is_default"]
+            })
+            
+        return jsonify({"items": items})
+
+    @app.route("/api/mp/addresses", methods=["POST"])
+    def mp_create_address():
+        """小程序端：创建地址"""
+        db = get_db()
+        cursor = db.cursor()
+        data = request.get_json(silent=True) or {}
+        user_id = 1 # 模拟
+
+        if data.get("is_default"):
+            cursor.execute("UPDATE user_address SET is_default = 0 WHERE user_id = %s", (user_id,))
+
+        cursor.execute(
+            "INSERT INTO user_address (user_id, name, phone, province, city, district, address_detail, tag, is_default) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (user_id, data.get("name"), data.get("phone"), data.get("province"), data.get("city"), 
+             data.get("district"), data.get("address_detail"), data.get("tag"), data.get("is_default", 0))
+        )
+        return jsonify({"success": True, "id": cursor.lastrowid}), 201
+
+    @app.route("/api/mp/addresses/<int:id>", methods=["PUT"])
+    def mp_update_address(id):
+        """小程序端：更新地址"""
+        db = get_db()
+        cursor = db.cursor()
+        data = request.get_json(silent=True) or {}
+        user_id = 1 # 模拟
+
+        if data.get("is_default"):
+            cursor.execute("UPDATE user_address SET is_default = 0 WHERE user_id = %s", (user_id,))
+
+        cursor.execute(
+            "UPDATE user_address SET name=%s, phone=%s, province=%s, city=%s, district=%s, "
+            "address_detail=%s, tag=%s, is_default=%s WHERE id=%s AND user_id=%s",
+            (data.get("name"), data.get("phone"), data.get("province"), data.get("city"), 
+             data.get("district"), data.get("address_detail"), data.get("tag"), 
+             data.get("is_default", 0), id, user_id)
+        )
+        return jsonify({"success": True})
+
+    @app.route("/api/mp/addresses/<int:id>", methods=["DELETE"])
+    def mp_delete_address(id):
+        """小程序端：删除地址"""
+        db = get_db()
+        cursor = db.cursor()
+        user_id = 1 # 模拟
+        cursor.execute("DELETE FROM user_address WHERE id=%s AND user_id=%s", (id, user_id))
+        return jsonify({"success": True})
 
 
 app = create_app()

@@ -1,0 +1,51 @@
+<view class="nav-bar bg-white" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight}}px;">
+  <view class="flex items-center" bindtap="goBack">
+    <image class="icon-nav" src="/image/caret-left.png"></image>
+    <view class="nav-title ml-2">{{id ? '编辑地址' : '添加地址'}}</view>
+  </view>
+</view>
+
+<view class="container bg-gray-50" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <view class="bg-white mt-4 p-4">
+    <view class="flex items-center border-b py-3">
+      <text class="w-20 text-gray-600">联系人</text>
+      <input class="flex-1" placeholder="请填写收货人姓名" value="{{form.name}}" bindinput="inputChange" data-field="name"/>
+    </view>
+    <view class="flex items-center border-b py-3">
+      <text class="w-20 text-gray-600">手机号</text>
+      <input class="flex-1" placeholder="请填写收货人手机号" type="number" value="{{form.phone}}" bindinput="inputChange" data-field="phone"/>
+    </view>
+    <view class="flex items-center border-b py-3">
+      <text class="w-20 text-gray-600">所在地区</text>
+      <picker mode="region" class="flex-1" bindchange="bindRegionChange" value="{{form.region}}">
+        <view class="{{form.region.length ? '' : 'text-gray-400'}}">
+          {{form.region[0]}} {{form.region[1]}} {{form.region[2]}}
+        </view>
+      </picker>
+    </view>
+    <view class="flex items-center py-3">
+      <text class="w-20 text-gray-600">详细地址</text>
+      <textarea class="flex-1 h-20 pt-1" placeholder="街道、楼牌号等" value="{{form.address_detail}}" bindinput="inputChange" data-field="address_detail"/>
+    </view>
+  </view>
+
+  <view class="bg-white mt-4 p-4">
+    <view class="flex items-center justify-between border-b py-3">
+      <text class="text-gray-600">标签</text>
+      <view class="flex gap-2">
+        <view class="px-3 py-1 rounded-full text-xs {{form.tag === '家' ? 'bg-green-100 text-green-600 border border-green-200' : 'bg-gray-100 text-gray-600'}}" bindtap="selectTag" data-tag="家">家</view>
+        <view class="px-3 py-1 rounded-full text-xs {{form.tag === '公司' ? 'bg-blue-100 text-blue-600 border border-blue-200' : 'bg-gray-100 text-gray-600'}}" bindtap="selectTag" data-tag="公司">公司</view>
+        <view class="px-3 py-1 rounded-full text-xs {{form.tag === '学校' ? 'bg-orange-100 text-orange-600 border border-orange-200' : 'bg-gray-100 text-gray-600'}}" bindtap="selectTag" data-tag="学校">学校</view>
+      </view>
+    </view>
+    <view class="flex items-center justify-between py-3">
+      <text class="text-gray-600">设为默认地址</text>
+      <switch checked="{{form.is_default}}" color="#3F7745" bindchange="switchChange"/>
+    </view>
+  </view>
+
+  <view class="p-4 mt-8">
+    <button class="bg-primary text-white w-full rounded-full py-3 font-bold mb-4" bindtap="save">保存</button>
+    <button class="bg-white text-red-500 w-full rounded-full py-3 font-bold" wx:if="{{id}}" bindtap="deleteAddress">删除地址</button>
+  </view>
+</view>

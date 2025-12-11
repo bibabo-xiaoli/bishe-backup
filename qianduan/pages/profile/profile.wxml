@@ -12,13 +12,13 @@
   <view class="user-header">
     <view class="user-info-row">
       <view class="avatar-box">
-        <image class="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"></image>
+        <image class="avatar-img" src="{{userInfo.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'}}"></image>
       </view>
       <view class="user-details">
-        <text class="user-name">环保小卫士</text>
-        <view class="user-level">
-          <image class="icon-xs" src="/image/crown.png"></image> <!-- Using crown as medal fallback -->
-          <text>Lv.3 绿色达人</text>
+        <text class="user-name">{{userInfo.nickname || '登录/注册'}}</text>
+        <view class="user-level" wx:if="{{userInfo.level_name}}">
+          <image class="icon-xs" src="/image/crown.png"></image>
+          <text>{{userInfo.level_name}}</text>
         </view>
       </view>
       <image class="icon-gear" src="/image/gear.png"></image>
@@ -28,15 +28,15 @@
     <view class="stats-row">
       <view class="stat-item bg-green-50">
         <text class="stat-label">累计减碳</text>
-        <view class="stat-val text-green">23.5 <text class="stat-unit">kg</text></view>
+        <view class="stat-val text-green">{{userInfo.total_carbon_kg || 0}} <text class="stat-unit">kg</text></view>
       </view>
       <view class="stat-item bg-blue-50">
         <text class="stat-label">回收次数</text>
-        <view class="stat-val text-blue">12 <text class="stat-unit">次</text></view>
+        <view class="stat-val text-blue">{{userInfo.recycle_count || 0}} <text class="stat-unit">次</text></view>
       </view>
       <view class="stat-item bg-orange-50">
         <text class="stat-label">当前积分</text>
-        <view class="stat-val text-orange">1,280</view>
+        <view class="stat-val text-orange">{{userInfo.current_points || 0}}</view>
       </view>
     </view>
   </view>
@@ -45,7 +45,7 @@
   <view class="menu-list">
     <!-- Order Management -->
     <view class="card">
-      <view class="card-header">
+      <view class="card-header" bindtap="navigateTo" data-url="/pages/orders/orders">
         <text class="card-title">我的订单</text>
         <view class="card-more">
           <text>全部</text>
@@ -53,19 +53,19 @@
         </view>
       </view>
       <view class="order-grid">
-        <view class="order-item">
+        <view class="order-item" bindtap="navigateTo" data-url="/pages/orders/orders?type=pending">
           <image class="order-icon" src="/image/clock.png"></image>
           <text>待上门</text>
         </view>
-        <view class="order-item">
+        <view class="order-item" bindtap="navigateTo" data-url="/pages/orders/orders?type=processing">
           <image class="order-icon" src="/image/package.png"></image>
           <text>进行中</text>
         </view>
-        <view class="order-item">
+        <view class="order-item" bindtap="navigateTo" data-url="/pages/orders/orders?type=completed">
           <image class="order-icon" src="/image/check-circle.png"></image>
           <text>已完成</text>
         </view>
-        <view class="order-item">
+        <view class="order-item" bindtap="navigateTo" data-url="/pages/orders/orders?type=aftersale">
           <image class="order-icon" src="/image/headset.png"></image>
           <text>售后</text>
         </view>
@@ -74,7 +74,7 @@
 
     <!-- Other Menu Items -->
     <view class="card menu-group">
-      <view class="menu-item border-bottom">
+      <view class="menu-item border-bottom" bindtap="navigateTo" data-url="/pages/address/address">
         <view class="menu-left">
           <image class="menu-icon icon-green" src="/image/map-pin.png"></image>
           <text>地址管理</text>
@@ -91,7 +91,7 @@
           <image class="icon-arrow" src="/image/caret-right.png"></image>
         </view>
       </view>
-      <view class="menu-item">
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/service/service">
         <view class="menu-left">
           <image class="menu-icon icon-gray" src="/image/headset.png"></image>
           <text>联系客服</text>

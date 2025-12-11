@@ -11,7 +11,10 @@
     "pages/guide/guide",
     "pages/guide/detail/detail",
     "pages/mall/mall",
-    "pages/identify/identify"
+    "pages/identify/identify",
+    "pages/address/address",
+    "pages/address/edit/edit",
+    "pages/service/service"
   ],
   "window": {
     "backgroundTextStyle": "light",
