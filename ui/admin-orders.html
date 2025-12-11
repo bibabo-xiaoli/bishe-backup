@@ -33,12 +33,6 @@
             </div>
             <nav class="flex-1 py-4 overflow-y-auto">
                 <div class="px-4 mb-2">
-                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-house text-lg"></i>
-                        <span>控制台</span>
-                    </a>
-                </div>
-                <div class="px-4 mb-2">
                     <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
                     <a href="admin-users.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
                         <i class="ph ph-users text-lg"></i>
@@ -48,11 +42,7 @@
                         <i class="ph ph-medal text-lg"></i>
                         <span>等级管理</span>
                     </a>
-                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-map-pin text-lg"></i>
-                        <span>地址管理</span>
-                    </a>
-                </div>
+                                    </div>
                 <div class="px-4 mb-2">
                     <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
                     <a href="admin-orders.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
@@ -60,11 +50,7 @@
                         <span>回收订单</span>
                         <span id="sidebar-pending-count" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
                     </a>
-                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-user-gear text-lg"></i>
-                        <span>回收员管理</span>
-                    </a>
-                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                                        <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
                         <i class="ph ph-package text-lg"></i>
                         <span>回收品类</span>
                     </a>
@@ -164,9 +150,9 @@
                             <option>王师傅</option>
                         </select>
                         <div class="flex items-center gap-2">
-                            <input id="order-date-start" type="date" class="border rounded-lg px-3 py-2 text-sm">
+                            <input id="order-date-start" type="date" class="border rounded-lg px-3 py-2 text-sm text-gray-400" placeholder="开始日期">
                             <span class="text-gray-400">至</span>
-                            <input id="order-date-end" type="date" class="border rounded-lg px-3 py-2 text-sm">
+                            <input id="order-date-end" type="date" class="border rounded-lg px-3 py-2 text-sm text-gray-400" placeholder="结束日期">
                         </div>
                         <button id="order-search-btn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">查询</button>
                         <button id="order-reset-btn" class="text-gray-500 text-sm hover:text-primary">重置</button>

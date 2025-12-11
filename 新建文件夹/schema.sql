@@ -181,3 +181,46 @@ CREATE TABLE IF NOT EXISTS after_sale (
   CONSTRAINT fk_after_sale_order FOREIGN KEY (order_id) REFERENCES recycle_order(id),
   CONSTRAINT fk_after_sale_user FOREIGN KEY (user_id) REFERENCES user(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. 社区模块 -----------------------------------------------------------------
+
+-- 话题表：用于配置社区话题，如“变废为宝”“垃圾分类疑惑”等
+CREATE TABLE IF NOT EXISTS community_topic (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  description VARCHAR(255),
+  is_hot TINYINT DEFAULT 0,
+  sort_order INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 帖子表：存储用户在社区发布的内容
+CREATE TABLE IF NOT EXISTS community_post (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  topic_id BIGINT,
+  content TEXT NOT NULL,
+  image_urls TEXT,
+  like_count INT DEFAULT 0,
+  comment_count INT DEFAULT 0,
+  status TINYINT DEFAULT 1, -- 1 正常 / 0 已删除
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_post_user (user_id),
+  KEY idx_post_topic (topic_id),
+  KEY idx_post_status (status),
+  KEY idx_post_created (created_at),
+  CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES user(id),
+  CONSTRAINT fk_post_topic FOREIGN KEY (topic_id) REFERENCES community_topic(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 预置一些常用话题，若已存在则更新名称及描述
+INSERT INTO community_topic (id, name, description, is_hot, sort_order) VALUES
+  (1, '全部推荐', '系统推荐的热门内容', 1, 1),
+  (2, '变废为宝', '创意改造与旧物利用', 1, 2),
+  (3, '垃圾分类疑惑', '关于垃圾分类的提问和解答', 1, 3),
+  (4, '环保活动', '社区环保活动招募和分享', 0, 4)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  description = VALUES(description),
+  is_hot = VALUES(is_hot),
+  sort_order = VALUES(sort_order);

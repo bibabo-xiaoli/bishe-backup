@@ -8,7 +8,9 @@
 """
 
 from datetime import date
+import io
 import json
+import os
 
 from flask import Flask, jsonify, request
 from pymysql.err import IntegrityError
@@ -106,7 +108,7 @@ def register_routes(app: Flask) -> None:
 
         cursor.execute(
             "SELECT u.id, u.nickname, u.avatar_url, u.phone, u.current_points, "
-            "u.total_carbon_kg, u.recycle_count, u.created_at, l.level_name "
+            "u.total_carbon_kg, u.recycle_count, u.created_at, u.status, l.level_name "
             + base_from
             + where_sql
             + " ORDER BY u.created_at DESC LIMIT %s OFFSET %s",
@@ -128,7 +130,7 @@ def register_routes(app: Flask) -> None:
                     "current_points": row["current_points"],
                     "total_carbon_kg": float(carbon) if carbon is not None else 0.0,
                     "recycle_count": row["recycle_count"],
-                    "status": "正常",  # 目前未在表中单独存储状态
+                    "status": "正常" if row.get("status", 1) == 1 else "已禁用",
                     "created_at": (
                         row["created_at"].strftime("%Y-%m-%d %H:%M:%S")
                         if row["created_at"]
@@ -196,6 +198,33 @@ def register_routes(app: Flask) -> None:
                 "address_detail": row["address_detail"],
             }
         return jsonify(data)
+
+    @app.route("/api/users/<int:user_id>/toggle-status", methods=["POST"])
+    def toggle_user_status(user_id: int):
+        """切换用户禁用状态。"""
+        db = get_db()
+        cursor = db.cursor()
+
+        # 获取当前状态
+        cursor.execute("SELECT status FROM user WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({"error": "User not found"}), 404
+
+        current_status = row.get("status", 1)
+        new_status = 0 if current_status == 1 else 1
+
+        cursor.execute(
+            "UPDATE user SET status = %s WHERE id = %s",
+            (new_status, user_id),
+        )
+        db.commit()
+
+        return jsonify({
+            "success": True,
+            "user_id": user_id,
+            "status": "正常" if new_status == 1 else "已禁用",
+        })
 
     @app.route("/api/dashboard/summary", methods=["GET"])
     def dashboard_summary():
@@ -859,6 +888,133 @@ def register_routes(app: Flask) -> None:
             },
         )
 
+	    # ========== 社区帖子管理（管理端） ==========
+
+	    @app.route("/api/admin/posts", methods=["GET"])
+	    def admin_list_posts():
+	        """社区帖子列表，供 admin-posts.html 使用。"""
+	        db = get_db()
+	        cursor = db.cursor()
+
+	        page = max(int(request.args.get("page", 1)), 1)
+	        per_page = min(int(request.args.get("per_page", 10)), 100)
+	        search = request.args.get("search", "").strip()
+	        topic_id = request.args.get("topic_id")
+	        status = request.args.get("status")
+
+	        where: list[str] = []
+	        params: list[object] = []
+
+	        if status not in (None, ""):
+	            where.append("p.status = %s")
+	            params.append(status)
+
+	        if topic_id:
+	            where.append("p.topic_id = %s")
+	            params.append(topic_id)
+
+	        if search:
+	            where.append("(p.content LIKE %s OR u.nickname LIKE %s)")
+	            like = f"%{search}%"
+	            params.extend([like, like])
+
+	        where_sql = " WHERE " + " AND ".join(where) if where else ""
+	        base_from = (
+	            " FROM community_post p "
+	            "JOIN user u ON p.user_id = u.id "
+	            "LEFT JOIN community_topic t ON p.topic_id = t.id "
+	        )
+
+	        cursor.execute(
+	            "SELECT COUNT(*) AS total" + base_from + where_sql,
+	            params,
+	        )
+	        total = cursor.fetchone()["total"]
+
+	        cursor.execute(
+	            "SELECT "
+	            "p.id, p.content, p.image_urls, p.like_count, p.comment_count, p.status, "
+	            "p.created_at, "
+	            "u.id AS user_id, u.nickname, u.avatar_url, "
+	            "t.id AS topic_id, t.name AS topic_name "
+	            + base_from
+	            + where_sql
+	            + " ORDER BY p.created_at DESC LIMIT %s OFFSET %s",
+	            params + [per_page, (page - 1) * per_page],
+	        )
+	        rows = cursor.fetchall()
+
+	        items: list[dict] = []
+	        for row in rows:
+	            created_at = row.get("created_at")
+	            images: list[str] | None = None
+	            if row.get("image_urls"):
+	                try:
+	                    parsed = json.loads(row["image_urls"])
+	                    if isinstance(parsed, list):
+	                        images = parsed
+	                except Exception:
+	                    images = None
+
+	            items.append(
+	                {
+	                    "id": row["id"],
+	                    "content": row["content"],
+	                    "images": images,
+	                    "like_count": row["like_count"],
+	                    "comment_count": row["comment_count"],
+	                    "status": row["status"],
+	                    "status_label": "正常" if row["status"] == 1 else "已删除",
+	                    "created_at": (
+	                        created_at.strftime("%Y-%m-%d %H:%M:%S")
+	                        if created_at
+	                        else None
+	                    ),
+	                    "user": {
+	                        "id": row["user_id"],
+	                        "nickname": row["nickname"],
+	                        "avatar_url": row["avatar_url"],
+	                    },
+	                    "topic": (
+	                        {
+	                            "id": row["topic_id"],
+	                            "name": row["topic_name"],
+	                        }
+	                        if row.get("topic_id")
+	                        else None
+	                    ),
+	                },
+	            )
+
+	        return jsonify(
+	            {"total": total, "page": page, "per_page": per_page, "items": items},
+	        )
+
+	    @app.route("/api/admin/posts/<int:post_id>", methods=["DELETE"])
+	    def admin_delete_post(post_id: int):
+	        """社区帖子删除（逻辑删除，status 置为 0）。"""
+	        db = get_db()
+	        cursor = db.cursor()
+
+	        cursor.execute(
+	            "SELECT id, status FROM community_post WHERE id = %s",
+	            (post_id,),
+	        )
+	        row = cursor.fetchone()
+	        if not row:
+	            return jsonify({"error": "Post not found"}), 404
+
+	        if row["status"] == 0:
+	            # 已经是删除状态，视为成功
+	            return jsonify({"success": True, "id": post_id})
+
+	        cursor.execute(
+	            "UPDATE community_post SET status = 0 WHERE id = %s",
+	            (post_id,),
+	        )
+	        db.commit()
+	        return jsonify({"success": True, "id": post_id})
+
     @app.route("/api/orders", methods=["GET"])
     def list_orders():
         """订单列表与状态统计，供 admin-orders.html 使用。
@@ -1323,6 +1479,164 @@ def register_routes(app: Flask) -> None:
             "recycle_count": row["recycle_count"],
         })
 
+	    @app.route("/api/mp/community/topics", methods=["GET"])
+	    def mp_list_topics():
+	        """
+  """
+	        
+	        
+	        
+	        
+	        db = get_db()
+	        cursor = db.cursor()
+
+	        cursor.execute(
+	            "SELECT id, name, description, is_hot, sort_order "
+	            "FROM community_topic ORDER BY sort_order IS NULL, sort_order, id",
+	        )
+	        rows = cursor.fetchall()
+
+	        items: list[dict] = []
+	        for row in rows:
+	            items.append(
+	                {
+	                    "id": row["id"],
+	                    "name": row["name"],
+	                    "description": row["description"],
+	                    "is_hot": bool(row["is_hot"]),
+	                    "sort_order": row["sort_order"],
+	                },
+	            )
+
+	        return jsonify({"items": items})
+
+	    @app.route("/api/mp/community/posts", methods=["GET"])
+	    def mp_list_posts():
+	        """
+
+	        """
+	        
+	        db = get_db()
+	        cursor = db.cursor()
+
+	        page = max(int(request.args.get("page", 1)), 1)
+	        per_page = min(int(request.args.get("per_page", 10)), 20)
+	        topic_id = request.args.get("topic_id")
+	        search = request.args.get("search", "").strip()
+
+	        where: list[str] = ["p.status = 1"]
+	        params: list[object] = []
+
+	        if topic_id:
+	            where.append("p.topic_id = %s")
+	            params.append(topic_id)
+
+	        if search:
+	            where.append("p.content LIKE %s")
+	            params.append(f"%{search}%")
+
+	        where_sql = " WHERE " + " AND ".join(where) if where else ""
+	        base_from = (
+	            " FROM community_post p "
+	            "JOIN user u ON p.user_id = u.id "
+	            "LEFT JOIN community_topic t ON p.topic_id = t.id "
+	        )
+
+	        cursor.execute(
+	            "SELECT COUNT(*) AS total" + base_from + where_sql,
+	            params,
+	        )
+	        total = cursor.fetchone()["total"]
+
+	        cursor.execute(
+	            "SELECT "
+	            "p.id, p.content, p.image_urls, p.like_count, p.comment_count, p.created_at, "
+	            "u.id AS user_id, u.nickname, u.avatar_url, "
+	            "t.id AS topic_id, t.name AS topic_name "
+	            + base_from
+	            + where_sql
+	            + " ORDER BY p.created_at DESC LIMIT %s OFFSET %s",
+	            params + [per_page, (page - 1) * per_page],
+	        )
+	        rows = cursor.fetchall()
+
+	        items: list[dict] = []
+	        for row in rows:
+	            created_at = row.get("created_at")
+	            images: list[str] | None = None
+	            if row.get("image_urls"):
+	                try:
+	                    parsed = json.loads(row["image_urls"])
+	                    if isinstance(parsed, list):
+	                        images = parsed
+	                except Exception:
+	                    images = None
+
+	            items.append(
+	                {
+	                    "id": row["id"],
+	                    "content": row["content"],
+	                    "images": images,
+	                    "like_count": row["like_count"],
+	                    "comment_count": row["comment_count"],
+	                    "created_at": (
+	                        created_at.strftime("%Y-%m-%d %H:%M")
+	                        if created_at
+	                        else None
+	                    ),
+	                    "user": {
+	                        "id": row["user_id"],
+	                        "nickname": row["nickname"],
+	                        "avatar_url": row["avatar_url"],
+	                    },
+	                    "topic": (
+	                        {
+	                            "id": row["topic_id"],
+	                            "name": row["topic_name"],
+	                        }
+	                        if row.get("topic_id")
+	                        else None
+	                    ),
+	                },
+	            )
+
+	        return jsonify(
+	            {"total": total, "page": page, "per_page": per_page, "items": items},
+	        )
+
+	    @app.route("/api/mp/community/posts", methods=["POST"])
+	    def mp_create_post():
+	        """
+
+	        """
+	        db = get_db()
+	        cursor = db.cursor()
+
+	        data = request.get_json(silent=True) or {}
+	        user_id = data.get("user_id") or 1  # TODO: 
+	        content = (data.get("content") or "").strip()
+	        if not content:
+	            return jsonify({"error": ""}), 400
+
+	        topic_id = data.get("topic_id")
+	        images = data.get("images") or data.get("image_urls")
+	        image_urls = None
+	        if isinstance(images, list) and images:
+	            try:
+	                image_urls = json.dumps(images, ensure_ascii=False)
+	            except Exception:
+	                image_urls = None
+
+	        cursor.execute(
+	            "INSERT INTO community_post (user_id, topic_id, content, image_urls) "
+	            "VALUES (%s, %s, %s, %s)",
+	            (user_id, topic_id, content, image_urls),
+	        )
+	        post_id = cursor.lastrowid
+	        db.commit()
+
+	        return jsonify({"success": True, "id": post_id}), 201
+
     @app.route("/api/mp/orders", methods=["GET"])
     def mp_list_orders():
         """小程序端：获取当前用户的订单列表"""
@@ -1503,6 +1817,159 @@ def register_routes(app: Flask) -> None:
             })
 
         return jsonify({"type": rank_type, "ranking": ranking})
+
+    @app.route("/api/mp/identify", methods=["POST"])
+    def mp_identify_rubbish():
+        """小程序端：智能拍照垃圾分类识别
+
+        请求：multipart/form-data，字段名为 ``file``。
+        返回：
+        {
+          "success": true,
+          "name": "PET 塑料瓶",
+          "category": "可回收物",
+          "confidence": 0.98,
+          "points": 10,
+          "tip": "请倒空液体，压扁投放"
+        }
+        """
+
+        if "file" not in request.files:
+            return jsonify({"success": False, "error": "缺少图片文件"}), 400
+
+        image_file = request.files["file"]
+        if image_file.filename == "":
+            return jsonify({"success": False, "error": "空文件名"}), 400
+
+        # 从环境变量读取阿里云 AccessKey，避免写死在代码里
+        access_key_id = os.environ.get("ALIBABA_CLOUD_ACCESS_KEY_ID")
+        access_key_secret = os.environ.get("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+        if not access_key_id or not access_key_secret:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": "阿里云访问密钥未配置，请在服务器环境变量中设置 ALIBABA_CLOUD_ACCESS_KEY_ID / ALIBABA_CLOUD_ACCESS_KEY_SECRET",
+                    }
+                ),
+                500,
+            )
+
+        try:
+            # 延迟导入阿里云 SDK，避免在未安装依赖时应用无法启动
+            from alibabacloud_imagerecog20190930.client import (  # type: ignore[import]
+                Client as ImagerecogClient,
+            )
+            from alibabacloud_imagerecog20190930.models import (  # type: ignore[import]
+                ClassifyingRubbishAdvanceRequest,
+            )
+            from alibabacloud_tea_openapi.models import (  # type: ignore[import]
+                Config as AliyunConfig,
+            )
+            from alibabacloud_tea_util.models import RuntimeOptions  # type: ignore[import]
+        except ImportError:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": "服务器未安装阿里云识别 SDK，请先在虚拟环境中执行 'pip install alibabacloud_imagerecog20190930'",
+                    }
+                ),
+                500,
+            )
+
+        # 读取上传的图片为二进制流
+        image_bytes = image_file.read()
+        if not image_bytes:
+            return jsonify({"success": False, "error": "图片内容为空"}), 400
+
+        img_stream = io.BytesIO(image_bytes)
+
+        # 构造阿里云客户端
+        config = AliyunConfig(
+            access_key_id=access_key_id,
+            access_key_secret=access_key_secret,
+            endpoint="imagerecog.cn-shanghai.aliyuncs.com",
+            region_id="cn-shanghai",
+        )
+
+        try:
+            client = ImagerecogClient(config)
+
+            request_model = ClassifyingRubbishAdvanceRequest()
+            # 按官方示例使用 image_urlobject 传入二进制流
+            request_model.image_urlobject = img_stream
+
+            runtime = RuntimeOptions()
+            response = client.classifying_rubbish_advance(request_model, runtime)
+
+            body = response.body
+            category = None
+            rubbish_name = None
+            confidence = None
+
+            # 尽量从返回结构中解析出我们需要的字段
+            try:
+                if hasattr(body, "to_map"):
+                    data_map = body.to_map()  # type: ignore[no-untyped-call]
+                else:
+                    data_map = None
+            except Exception:
+                data_map = None
+
+            if isinstance(data_map, dict):
+                elements = (
+                    (data_map.get("Data") or {}).get("Elements")  # type: ignore[assignment]
+                    or []
+                )
+                if elements:
+                    first = elements[0] or {}
+                    category = first.get("Category")
+                    # 不同版本字段名可能不同，做兼容处理
+                    rubbish_name = (
+                        first.get("Rubbish")
+                        or first.get("Name")
+                        or first.get("ItemName")
+                    )
+                    confidence = first.get("Score") or first.get("Confidence")
+
+            # 根据类别简单映射一个项目内使用的积分和提示语
+            tip = "请根据提示正确投放"
+            points = 5
+            if category in ("可回收物", "recyclable"):
+                points = 10
+                tip = "请清空残留物并压扁后投放至可回收物桶"
+            elif category in ("厨余垃圾", "household_food_waste"):
+                points = 8
+                tip = "请沥干水分后投放至厨余垃圾桶"
+            elif category in ("有害垃圾", "hazardous"):
+                points = 0
+                tip = "请密封包装后投放至有害垃圾桶，避免破损泄漏"
+            elif category in ("其他垃圾", "residual_waste"):
+                points = 5
+                tip = "请尽量减少此类垃圾产生，按指引投放"
+
+            result = {
+                "success": True,
+                "name": rubbish_name or "未知物品",
+                "category": category or "未知分类",
+                "confidence": float(confidence) if confidence is not None else None,
+                "points": points,
+                "tip": tip,
+            }
+
+            return jsonify(result)
+        except Exception as exc:  # pragma: no cover - 外部服务异常
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": "调用阿里云识别服务失败",
+                        "detail": str(exc),
+                    }
+                ),
+                502,
+            )
 
     @app.route("/api/mp/addresses", methods=["GET"])
     def mp_list_addresses():

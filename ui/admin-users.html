@@ -33,12 +33,6 @@
             </div>
             <nav class="flex-1 py-4 overflow-y-auto">
                 <div class="px-4 mb-2">
-                    <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-house text-lg"></i>
-                        <span>控制台</span>
-                    </a>
-                </div>
-                <div class="px-4 mb-2">
                     <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">用户管理</p>
                     <a href="admin-users.html" class="sidebar-item active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition">
                         <i class="ph ph-users text-lg"></i>
@@ -48,22 +42,14 @@
                         <i class="ph ph-medal text-lg"></i>
                         <span>等级管理</span>
                     </a>
-                    <a href="admin-address.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-map-pin text-lg"></i>
-                        <span>地址管理</span>
-                    </a>
-                </div>
+                                    </div>
                 <div class="px-4 mb-2">
                     <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 px-4">订单管理</p>
                     <a href="admin-orders.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
                         <i class="ph ph-clipboard-text text-lg"></i>
                         <span>回收订单</span>
                     </a>
-                    <a href="admin-collectors.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
-                        <i class="ph ph-user-gear text-lg"></i>
-                        <span>回收员管理</span>
-                    </a>
-                    <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
+                                        <a href="admin-categories.html" class="sidebar-item flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 transition">
                         <i class="ph ph-package text-lg"></i>
                         <span>回收品类</span>
                     </a>
@@ -183,10 +169,7 @@
                         </select>
                         <button id="user-search-button" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">查询</button>
                         <button id="user-reset-button" class="text-gray-500 text-sm hover:text-primary">重置</button>
-                        <button class="ml-auto bg-white border border-primary text-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-primary hover:text-white transition">
-                            <i class="ph ph-export"></i> 导出数据
-                        </button>
-                    </div>
+                                            </div>
                 </div>
 
                 <!-- Table -->
@@ -204,7 +187,7 @@
                                 <th class="px-4 py-3">回收次数</th>
                                 <th class="px-4 py-3">状态</th>
                                 <th class="px-4 py-3">注册时间</th>
-                                <th class="px-4 py-3">操作</th>
+                                <th class="px-4 py-3">是否禁用</th>
                             </tr>
                         </thead>
                         <tbody id="user-table-body" class="divide-y text-sm">
@@ -225,11 +208,7 @@
                                 <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
                                 <td class="px-4 py-3 text-gray-500">2023-08-15 10:30</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="text-primary hover:underline">详情</button>
-                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
-                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
-                                    </div>
+                                    <button class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600">禁用</button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-gray-50">
@@ -249,11 +228,7 @@
                                 <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
                                 <td class="px-4 py-3 text-gray-500">2023-09-02 14:20</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="text-primary hover:underline">详情</button>
-                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
-                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
-                                    </div>
+                                    <button class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600">禁用</button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-gray-50">
@@ -273,11 +248,7 @@
                                 <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
                                 <td class="px-4 py-3 text-gray-500">2023-09-10 09:15</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="text-primary hover:underline">详情</button>
-                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
-                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
-                                    </div>
+                                    <button class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600">禁用</button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-gray-50">
@@ -297,11 +268,7 @@
                                 <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">正常</span></td>
                                 <td class="px-4 py-3 text-gray-500">2023-09-15 16:40</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="text-primary hover:underline">详情</button>
-                                        <button class="text-gray-400 hover:text-orange-500">编辑</button>
-                                        <button class="text-gray-400 hover:text-red-500">禁用</button>
-                                    </div>
+                                    <button class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600">禁用</button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-gray-50 bg-red-50/50">
@@ -321,10 +288,7 @@
                                 <td class="px-4 py-3"><span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs">已禁用</span></td>
                                 <td class="px-4 py-3 text-gray-400">2023-10-01 11:20</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="text-primary hover:underline">详情</button>
-                                        <button class="text-green-500 hover:underline">启用</button>
-                                    </div>
+                                    <button class="px-3 py-1 rounded text-xs font-medium bg-red-100 text-red-600">已禁用</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -494,11 +458,7 @@
                         <td class="px-4 py-3"><span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs">${user.status || '正常'}</span></td>
                         <td class="px-4 py-3 text-gray-500">${user.created_at || '-'}</td>
                         <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <button class="text-primary hover:underline">[0m详情</button>
-                                <button class="text-gray-400 hover:text-orange-500">[0m编辑</button>
-                                <button class="text-gray-400 hover:text-red-500">[0m禁用</button>
-                            </div>
+                            <button onclick="toggleUserStatus(${user.id})" class="px-3 py-1 rounded text-xs font-medium ${user.status === '已禁用' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'}">${user.status === '已禁用' ? '取消禁用' : '禁用'}</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -509,6 +469,23 @@
                 }
             } catch (e) {
                 console.error('加载用户列表失败', e);
+            }
+        }
+
+        async function toggleUserStatus(userId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/users/${userId}/toggle-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (res.ok) {
+                    loadUsers();
+                } else {
+                    alert('操作失败，请重试');
+                }
+            } catch (e) {
+                console.error('切换用户状态失败', e);
+                alert('操作失败，请重试');
             }
         }
 
